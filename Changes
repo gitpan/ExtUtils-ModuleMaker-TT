@@ -1,5 +1,10 @@
 Revision history for Perl module ExtUtils::ModuleMaker::TT
 
+0.71 Thu Apr 22 06:29:21 EDT 2004
+	- fixed up template bugs
+	- "makeperlmod -d" now takes a file argument rather than sending the
+	  config to stdout
+
 0.70 Sun Mar  7 18:56:00 EST 2004
 	- initial release version
 	- basic functionality working

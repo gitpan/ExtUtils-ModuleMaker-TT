@@ -1,0 +1,41 @@
+This file contains message digests of all files listed in MANIFEST,
+signed via the Module::Signature module, version 0.38.
+
+To verify the content in this distribution, first make sure you have
+Module::Signature installed, then type:
+
+    % cpansign -v
+
+It would check each file's integrity, as well as the signature's
+validity.  If "==> Signature verified OK! <==" is not displayed,
+the distribution may already have been compromised, and you should
+not run its Makefile.PL or Build.PL.
+
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+SHA1 82114cef955fe6c86683c00712cdba40095361f1 Build.PL
+SHA1 0606f1742996d5a46a328d0f77cbc06f42ad2ced Changes
+SHA1 f235ba4160673bcb7c9d58c2f09dbc7fc0efadea LICENSE
+SHA1 afa1c27430b49d6e2886583071f0f680ec50d38a MANIFEST
+SHA1 e24f117faebfd93024c9043cad80d4acdef8c68c MANIFEST.SKIP
+SHA1 fc9b5717ea580624a4def5ec40c96222b3538a81 META.yml
+SHA1 e86245b6a930636e230cc7607c02cdabe7d1e2fc Makefile.PL
+SHA1 0755e936e5f076458c810ec30e7a83a0dfa318f5 README
+SHA1 6e3e987ae9d63aa500e945699d0906e77e8a91d2 Todo
+SHA1 62ac0d02e86d2816b5dff0199e91b2d65f86df8a lib/ExtUtils/ModuleMaker/TT.pm
+SHA1 864d4a4b99f0d2a7cb966d4af8ecc7217250f0b9 scripts/makeperlmod
+SHA1 c0cf1eceb05f8a98f10b43722827b7ec573f1fdd t/01_dist.t
+SHA1 668ba3855763eddd5384fe1f584bccbb2b49296f t/02_ini.t
+SHA1 01f92a6b22f3df15573810ad6938ff9603d06dfa t/03_quick.t
+SHA1 1a7c10ef680a55d4f29f9d1ab14f0e83ad38405e t/04_compact.t
+SHA1 c2c13906b2ad593262804d76a5af18768a807433 t/05_template.t
+SHA1 34829177fc989160785d22c9fd00741eeaa20d7a t/06_singlepm.t
+SHA1 94c17b8cd01e9cd4b89e681105bc30d1570f9f81 t/07_buildproxy.t
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.2.3 (GNU/Linux)
+
+iD8DBQFAh6HbKeygAqLMQmMRAveSAKDEXpwx6j8QzR1+nZDysDeXREWnHQCfWMVZ
+eMvhpBkHv+5lcaevbDMOaK4=
+=IMJe
+-----END PGP SIGNATURE-----

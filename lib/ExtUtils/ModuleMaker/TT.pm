@@ -5,7 +5,7 @@ use warnings;
 BEGIN {
 	use Exporter ();
 	use vars qw ($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
-	$VERSION     = '0.70';
+	$VERSION     = '0.71';
 	@ISA         = qw (ExtUtils::ModuleMaker Exporter);
 	#Give a hoot don't pollute, do not export more than needed by default
 	@EXPORT      = qw ();
@@ -582,6 +582,9 @@ BEGIN {
 
 
 [% pod_head1 %] USAGE
+
+[% pod_cut %]
+
 [% END %]
 [%- IF NEED_NEW_METHOD -%]
 [% new_method -%]
@@ -672,7 +675,7 @@ modules.
 
 This can all be done quite easily with L<makeperlmod>.  Begin with:
 
-    makeperlmod -d > ~/.makeperlmod.config
+    makeperlmod -d ~/.makeperlmod.config
     makeperlmod -t ~/.makeperlmod.templates
 
 Edit .makeperlmod.config and add C<TEMPLATE_DIR ~/.makeperlmod.templates>.  Make
@@ -687,7 +690,7 @@ Presto!  Customization is done.  Now start making modules with
 
     makeperlmod -n My::New::Module
 
-=head2 Creating Custom Template Variables (Use With Caution)
+=head2 Creating custom template variables (use with caution)
 
 When templates are processed, the entire ExtUtils::ModuleMaker::TT object is
 passed to the Template Toolkit.  Thus any class data is available for use in
