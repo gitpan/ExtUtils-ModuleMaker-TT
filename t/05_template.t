@@ -1,10 +1,13 @@
 # t/05_template.t -- tests abilty to create template directory
 
 #use Test::More qw/no_plan/;
-use Test::More tests => 15;
+use Test::More tests => 16;
+use File::Temp qw( tempdir );
 
 BEGIN { use_ok( 'ExtUtils::ModuleMaker::TT' ); }
-ok (chdir 'blib/testing' || chdir '../blib/testing', "chdir 'blib/testing'");
+my $tempdir = tempdir( CLEANUP => 1 );
+ok ($tempdir, "making tempdir $tempdir");
+ok (chdir $tempdir, "chdir $tempdir");
 
 ###########################################################################
 

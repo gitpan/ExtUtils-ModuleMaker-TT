@@ -2,13 +2,12 @@ Build.PL
 Changes
 lib/ExtUtils/ModuleMaker/TT.pm
 LICENSE
-Makefile.PL
-MANIFEST
-MANIFEST.SKIP
+MANIFEST			This list of files
 META.yml
 README
 scripts/makeperlmod
-t/01_dist.t
+t/00-pod.t
+t/00-podcover.t
 t/02_ini.t
 t/03_quick.t
 t/04_compact.t

@@ -2,7 +2,8 @@
 
 # t/02_ini.t - check module loading and create testing directory
 
-use Test::More tests => 6;
+use Test::More tests => 5;
+use File::Temp qw( tempdir );
 
 BEGIN { use_ok( 'ExtUtils::ModuleMaker::TT' ); }
 BEGIN { use_ok( 'ExtUtils::ModuleMaker::Licenses::Standard' ); }
@@ -10,12 +11,7 @@ BEGIN { use_ok( 'ExtUtils::ModuleMaker::Licenses::Local' ); }
 
 ###########################################################################
 
-BEGIN { use_ok( 'File::Path' ); }
+my $tempdir = tempdir( CLEANUP => 1 );
+ok ($tempdir, "making tempdir $tempdir");
+ok (chdir $tempdir, "chdir $tempdir");
 
-ok (chdir 'blib' || chdir '../blib',
-	"chdir 'blib'");
-
-mkpath ('testing', 0, 0775);
-
-ok (chdir 'testing',
-	"chdir 'testing'");

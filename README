@@ -145,6 +145,10 @@ INTERNAL METHODS
     purposes only and may change in future releases. End users are
     encouraged to avoid using them.
 
+  Create_Base_Directory
+    Overrides the parent. Same function, but sets the Base_Dir parameter to
+    an absolute file path. (Helpful for single-module builds)
+
   process_template
         $mmtt->process_template( $template, \%data, $outputfile );
 
@@ -184,7 +188,7 @@ CUSTOMIZING TEMPLATES
   Customizing with makeperlmod
     This can all be done quite easily with makeperlmod. Begin with:
 
-        makeperlmod -d > ~/.makeperlmod.config
+        makeperlmod -d ~/.makeperlmod.config
         makeperlmod -t ~/.makeperlmod.templates
 
     Edit .makeperlmod.config and add "TEMPLATE_DIR
@@ -200,7 +204,7 @@ CUSTOMIZING TEMPLATES
 
         makeperlmod -n My::New::Module
 
-  Creating Custom Template Variables (Use With Caution)
+  Creating custom template variables (use with caution)
     When templates are processed, the entire ExtUtils::ModuleMaker::TT
     object is passed to the Template Toolkit. Thus any class data is
     available for use in templates. Users may add custom configuration

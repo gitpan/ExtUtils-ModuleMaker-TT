@@ -5,7 +5,7 @@ use warnings;
 BEGIN {
 	use Exporter ();
 	use vars qw ($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
-	$VERSION     = '0.73';
+	$VERSION     = "0.74";
 	@ISA         = qw (ExtUtils::ModuleMaker Exporter);
 	#Give a hoot don't pollute, do not export more than needed by default
 	@EXPORT      = qw ();
@@ -16,6 +16,7 @@ BEGIN {
 use ExtUtils::ModuleMaker;
 use Template;
 use Cwd;
+use File::Spec;
 
 ########################################### main pod documentation begin ##
 # Below is the stub of documentation for your module. You better edit it!
@@ -258,20 +259,20 @@ sub build_single_pm {
 	
 	# To support calling this function on a standalone basis, look upwards
 	# for a base directory
-	my $orig_wd = my $cwd = cwd();
-	unless ($self->{Base_Dir}) {
-		while ($cwd) {
-			chdir $cwd;
-			if ( -e 'MANIFEST' and -d 'lib' ) {
-				$self->{Base_Dir} = $cwd; 
-				last;
-			}
-			$cwd =~ s|/[^/]*$||;
-		}
-		chdir $orig_wd;
-	    $self->death_message("Can't locate base directory") unless $self->{Base_Dir};
-	}
-	
+    my $orig_wd = my $cwd = cwd();
+    unless ($self->{Base_Dir}) {
+        while ($cwd) {
+            chdir $cwd;
+            if ( -e 'MANIFEST' and -d 'lib' ) {
+                $self->{Base_Dir} = $cwd; 
+                last;
+            }
+            $cwd =~ s|/[^/]*$||;
+        }
+        chdir $orig_wd;
+        $self->death_message("Can't locate base directory") unless $self->{Base_Dir};
+    }	
+
 	$self->Create_PM_Basics ($module_object);
 	$module_object->{new_method} = $self->build_single_method('new');
 	# hack to remove subroutine bit	-- a real new sub is in module.pm template
@@ -336,6 +337,28 @@ sub create_template_directory {
 These methods are used internally. They are documented for developer purposes
 only and may change in future releases.  End users are encouraged to avoid 
 using them.
+
+=head2 Create_Base_Directory
+
+Overrides the parent.  Same function, but sets the Base_Dir parameter
+to an absolute file path.  (Helpful for single-module builds)
+
+=cut
+
+################################################## subroutine header end ##
+
+sub Create_Base_Directory
+{
+    my $self = shift;
+
+    $self->{Base_Dir} = File::Spec->rel2abs(
+        join( ($self->{COMPACT}) ? '-' : '/', 
+        split (/::|'/, $self->{NAME}))
+    );
+    $self->Check_Dir ($self->{Base_Dir});
+}
+
+
 
 =head2 process_template
 
@@ -556,7 +579,7 @@ use Carp;
 BEGIN {
 	use Exporter ();
 	use vars qw ($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
-	$VERSION     = 0.01;
+	$VERSION     = "0.74";
 	@ISA         = qw (Exporter);
 	#Give a hoot don't pollute, do not export more than needed by default
 	@EXPORT      = qw ();

@@ -1,10 +1,13 @@
 # t/03_quick.t -- tests a quick build with minimal options
 
 #use Test::More qw/no_plan/;
-use Test::More tests => 17;
+use Test::More tests => 18;
+use File::Temp qw( tempdir );
 
 BEGIN { use_ok( 'ExtUtils::ModuleMaker::TT' ); }
-ok (chdir 'blib/testing' || chdir '../blib/testing', "chdir 'blib/testing'");
+my $tempdir = tempdir( CLEANUP => 1 );
+ok ($tempdir, "making tempdir $tempdir");
+ok (chdir $tempdir, "chdir $tempdir");
 
 ###########################################################################
 

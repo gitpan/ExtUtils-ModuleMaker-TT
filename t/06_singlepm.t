@@ -2,10 +2,13 @@
 # tree
 
 #use Test::More qw/no_plan/;
-use Test::More tests => 11;
+use Test::More tests => 14;
+use File::Temp qw( tempdir );
 
 BEGIN { use_ok( 'ExtUtils::ModuleMaker::TT' ); }
-ok (chdir 'blib/testing' || chdir '../blib/testing', "chdir 'blib/testing'");
+my $tempdir = tempdir( CLEANUP => 1 );
+ok ($tempdir, "making tempdir $tempdir");
+ok (chdir $tempdir, "chdir $tempdir");
 
 ###########################################################################
 
@@ -16,8 +19,12 @@ ok ($MOD  = ExtUtils::ModuleMaker::TT->new
 				NAME		=> 'Sample::Module::Foo',
 				COMPACT		=> 1,
 				LICENSE		=> 'looselips',
+				BUILD_SYSTEM => 'Module::Build'
 			),
 	"call ExtUtils::ModuleMaker::TT->new");
+
+ok ($MOD->complete_build (),
+	"call \$MOD->complete_build");
 	
 ok (chdir 'Sample-Module-Foo',
 	"cd Sample-Module-Foo");
@@ -35,10 +42,18 @@ ok ( -e 't/Sample_Module_Bar.t',
 
 # test from a deep directory
 
-$MOD->{Base_Dir} = undef;
+my $tgtdir = 'lib/Sample/Module';
+ok (chdir $tgtdir,
+	"cd $tgtdir");
 
-ok (chdir '../Sample/Module/lib/Sample',
-	"cd ../Sample/Module/lib/Sample");
+ok ($MOD  = ExtUtils::ModuleMaker::TT->new
+			(
+				NAME		=> 'Sample::Module::Foo',
+				COMPACT		=> 1,
+				LICENSE		=> 'looselips',
+				BUILD_SYSTEM => 'Module::Build'
+			),
+	"call ExtUtils::ModuleMaker::TT->new");
 
 ok ($MOD->build_single_pm({ NAME => 'Sample::Module::Bar'}),
 	"call \$MOD->build_single_pm");

@@ -1,5 +1,13 @@
 Revision history for Perl module ExtUtils::ModuleMaker::TT
 
+0.74 Sun Mar 13 20:56:06 EST 2005
+    - added pod and pod coverage tests
+    - updated script version from 0.72 to 0.74
+    - overrode Create_Base_Directory to use absolute Base_Dir parameter
+    - changed tests to use temporary directories
+    - cleaned up some testing of single module creation
+    - switched Makefile.PL to passthrough version from Module::Build
+
 0.73 Tue May 11 17:28:57 EDT 2004
 	- removed Test::Distribution from requirements in Build.PL
 	- make distribution test optional depending on presence of 
