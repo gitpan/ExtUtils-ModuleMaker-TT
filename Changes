@@ -1,5 +1,10 @@
 Revision history for Perl module ExtUtils::ModuleMaker::TT
 
+0.73 Tue May 11 17:28:57 EDT 2004
+	- removed Test::Distribution from requirements in Build.PL
+	- make distribution test optional depending on presence of 
+	  Test::Distribution
+
 0.72 Thu Apr 22 07:07:00 EDT 2004
 	- fixed makeperlmod config file bug
 

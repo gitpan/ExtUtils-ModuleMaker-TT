@@ -16,7 +16,7 @@ Module::Build->new
 						   File::Spec::Functions => 1.3,
 						   Data::Dumper => 2.121,
 						 },
-	  build_requires  => { Test::Distribution => 1.11, 
+	  build_requires  => { 
 	                       Module::Build => 0.24,
 						 },
 	  script_files    => [ 'scripts/makeperlmod' ],

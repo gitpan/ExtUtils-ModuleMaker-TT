@@ -16,5 +16,3 @@ t/05_template.t
 t/06_singlepm.t
 t/07_buildproxy.t
 Todo
-
-SIGNATURE    Added here by Module::Build

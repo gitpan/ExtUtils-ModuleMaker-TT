@@ -1,6 +1,16 @@
-# Tests overall distribution components for use, consistent
-# versioning, correct pod, and correct PREREQ_PM list.  The
-# single line "use Test::Distribution" is all that is needed.
-# not testing prereqs as Test::Distribution doesn't
-# support Module::Build yet
-use Test::Distribution qw( not prereq );
+# Test distribution before release
+# Optional for end users if Test::Distribution not installed
+
+use Test::More;
+
+BEGIN {
+	eval {
+   	   require Test::Distribution;
+	};
+	if($@) {
+   	   plan skip_all => "Test::Distribution not installed";
+	}
+	else {
+   	   import Test::Distribution;
+	}
+}
