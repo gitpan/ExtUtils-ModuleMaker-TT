@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 use strict;
-use constant VERSION => '0.71';
+use constant VERSION => '0.72';
 use Getopt::Long;
 use Pod::Usage;
 use Config::General;
@@ -43,6 +43,7 @@ unless ( $cmd_opt_count == 1  ) {
 }
 
 # Load config file if specified or search for any default automagically 
+$opt{config} ||= find_file();
 my $config = new Config::General( -ConfigFile => $opt{config},
                                   -AutoTrue => 1 );
 																
@@ -91,7 +92,7 @@ SWITCH: for(1) {
 	
 	$opt{version} && do {
 		print "$0 version " . VERSION . "\n";
-		print "Current config hash:\n" . Data::Dumper->Dump ( [$config->getall], [qw(config)]);
+		print "Current config hash:\n" . Data::Dumper->Dump ( [{$config->getall}], [qw(config)]);
 		last;
 	}
 } 

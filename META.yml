@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name: ExtUtils-ModuleMaker-TT
-version: 0.71
+version: 0.72
 author:
   - David A. Golden <david@dagolden.com>
 abstract: |-
@@ -23,5 +23,5 @@ build_requires:
 provides:
   ExtUtils::ModuleMaker::TT:
     file: lib/ExtUtils/ModuleMaker/TT.pm
-    version: 0.71
+    version: 0.72
 generated_by: Module::Build version 0.24
