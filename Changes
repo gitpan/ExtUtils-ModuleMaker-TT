@@ -1,0 +1,7 @@
+Revision history for Perl module ExtUtils::ModuleMaker::TT
+
+0.70 Sun Mar  7 18:56:00 EST 2004
+	- initial release version
+	- basic functionality working
+	- makeperlmod script working
+
