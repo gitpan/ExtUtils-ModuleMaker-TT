@@ -4,7 +4,7 @@ use Module::Build;
 Module::Build->new
     ( module_name     => 'ExtUtils::ModuleMaker::TT',
 	  dist_author     => 'David A Golden <dagolden@cpan.org>',
-      create_makefile_pl => "passthrough",
+      create_makefile_pl => "traditional",
       create_readme => 1,
       license         => 'perl',
 	  requires        => { 
@@ -23,6 +23,8 @@ Module::Build->new
 	  build_requires  => { 
           File::Temp => 0.16, 
           Test::More => 0.54,
+          Test::Pod => 1.20,
+          Test::Pod::Coverage => 1.06,
       },
 	  script_files    => [ 'scripts/makeperlmod' ],
     )->create_build_script;

@@ -1,5 +1,9 @@
 Revision history for Perl module ExtUtils::ModuleMaker::TT
 
+0.75 Tue Jun  7 18:04:53 EDT 2005
+    - updated Build.PL dependencies
+    - changed Makefile compatibility to traditional
+
 0.74 Sun Mar 13 20:56:06 EST 2005
     - added pod and pod coverage tests
     - updated script version from 0.72 to 0.74
