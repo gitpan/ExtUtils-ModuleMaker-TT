@@ -14,7 +14,7 @@ Module::Build->new
           File::Path => 1.06,
           File::Spec => 0.87,
           File::Spec::Functions => 1.3,
-          Getopt::Long => 2.34,
+          Getopt::Long => 0,
           Pod::Usage => 1.00,
           Config::General => 2.19,
           File::Basename => 0,
@@ -22,9 +22,7 @@ Module::Build->new
       },
 	  build_requires  => { 
           File::Temp => 0.16, 
-          Test::More => 0.54,
-          Test::Pod => 1.20,
-          Test::Pod::Coverage => 1.06,
+          Test::More => 0.47,
       },
 	  script_files    => [ 'scripts/makeperlmod' ],
     )->create_build_script;

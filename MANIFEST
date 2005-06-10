@@ -3,11 +3,10 @@ Changes
 lib/ExtUtils/ModuleMaker/TT.pm
 LICENSE
 MANIFEST			This list of files
+MANIFEST.SKIP
 META.yml
 README
 scripts/makeperlmod
-t/00-pod.t
-t/00-podcover.t
 t/02_ini.t
 t/03_quick.t
 t/04_compact.t
@@ -15,3 +14,4 @@ t/05_template.t
 t/06_singlepm.t
 t/07_buildproxy.t
 Todo
+Makefile.PL
