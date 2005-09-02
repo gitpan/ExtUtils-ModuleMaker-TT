@@ -184,15 +184,15 @@ INTERNAL METHODS
 
     Templates included are:
 
-            * README
-            * Changes
-            * Todo
-            * Build.PL
-            * Makefile.PL
-            * Proxy_Makefile.PL
-            * MANIFEST.SKIP
-            * test.t
-            * module.pm
+        * README
+        * Changes
+        * Todo
+        * Build.PL
+        * Makefile.PL
+        * Proxy_Makefile.PL
+        * MANIFEST.SKIP
+        * test.t
+        * module.pm
 
 CUSTOMIZING TEMPLATES
   Overview
@@ -249,7 +249,7 @@ REQUIRES
      File::Basename
      Config::General
      Data::Dumper
-        
+    
 BUGS
     None reported yet, though there must be some. E-mail bug reports to the
     author.
@@ -261,7 +261,7 @@ AUTHOR
      David A. Golden
      david@dagolden.com
      http://dagolden.com/
-        
+    
 COPYRIGHT
     Copyright (c) 2004 by David A. Golden
 

@@ -3,7 +3,7 @@ use strict;
 use warnings;
 
 use vars qw ($VERSION);
-$VERSION     = "0.77";
+$VERSION     = "0.78";
 
 use base 'ExtUtils::ModuleMaker';
 use Template;
@@ -144,13 +144,13 @@ Returns a new ExtUtils::ModuleMaker::TT object.
 
 sub new
 {
-	my ($class, %parameters) = @_;
-	my $self = ExtUtils::ModuleMaker::new($class, %parameters);
-	$self->{templates} = { $self->default_templates() };
-	$self->{pod_head1} = "=head1";
-	$self->{pod_head2} = "=head2";
-	$self->{pod_cut} = "=cut";
-	return $self;
+    my ($class, %parameters) = @_;
+    my $self = ExtUtils::ModuleMaker::new($class, %parameters);
+    $self->{templates} = { $self->default_templates() };
+    $self->{pod_head1} = "=head1";
+    $self->{pod_head2} = "=head2";
+    $self->{pod_cut} = "=cut";
+    return $self;
 }
 
 =head2 complete_build
@@ -169,49 +169,49 @@ It returns the distribution directory created.  (Helpful in scripts.)
 
 sub complete_build
 {
-	my ($self, %args) = @_;
-	
-	for (keys %args) {
-		$self->{$_} = $args{$_};
-	}
-	
-	$self->verify_values ();
+    my ($self, %args) = @_;
+    
+    for (keys %args) {
+        $self->{$_} = $args{$_};
+    }
+    
+    $self->verify_values ();
     
     $self->{DIST} = $self->{NAME};
     $self->{DIST} =~ s/::/-/g;
 
-	$self->Create_Base_Directory ();
-	$self->check_dir (map { "$self->{Base_Dir}/$_" } qw (lib t scripts));
+    $self->Create_Base_Directory ();
+    $self->check_dir (map { "$self->{Base_Dir}/$_" } qw (lib t scripts));
 
-	$self->print_file ('LICENSE',		$self->{LicenseParts}{LICENSETEXT});
+    $self->print_file ('LICENSE',        $self->{LicenseParts}{LICENSETEXT});
 
-	$self->process_template('README', $self, 'README');
-	$self->process_template('Todo', $self, 'Todo');
-	$self->process_template('MANIFEST.SKIP', $self, 'MANIFEST.SKIP');
+    $self->process_template('README', $self, 'README');
+    $self->process_template('Todo', $self, 'Todo');
+    $self->process_template('MANIFEST.SKIP', $self, 'MANIFEST.SKIP');
 
-	unless ($self->{CHANGES_IN_POD}) {
-		$self->process_template('Changes', $self, 'Changes');
-	}
+    unless ($self->{CHANGES_IN_POD}) {
+        $self->process_template('Changes', $self, 'Changes');
+    }
 
-	foreach my $module ($self, @{$self->{EXTRA_MODULES}}) {
-		# Need to add config keys to extra modules (w/o overwriting NAME)
-		$self->build_single_pm($module);
-	}
+    foreach my $module ($self, @{$self->{EXTRA_MODULES}}) {
+        # Need to add config keys to extra modules (w/o overwriting NAME)
+        $self->build_single_pm($module);
+    }
 
-	#Makefile must be created after generate_pm_file which sets $self->{FILE}
-	if ($self->{BUILD_SYSTEM} eq 'ExtUtils::MakeMaker') {
-		$self->process_template('Makefile.PL', $self, 'Makefile.PL');
-	} else {
-		$self->process_template('Build.PL', $self, 'Build.PL');
-		if ($self->{BUILD_SYSTEM} eq 'Module::Build and Proxy' or
-		    $self->{BUILD_SYSTEM} eq 'Module::Build and proxy Makefile.PL') {
-			$self->process_template('Proxy_Makefile.PL', $self, 'Makefile.PL');
-		}
-	}
+    #Makefile must be created after generate_pm_file which sets $self->{FILE}
+    if ($self->{BUILD_SYSTEM} eq 'ExtUtils::MakeMaker') {
+        $self->process_template('Makefile.PL', $self, 'Makefile.PL');
+    } else {
+        $self->process_template('Build.PL', $self, 'Build.PL');
+        if ($self->{BUILD_SYSTEM} eq 'Module::Build and Proxy' or
+            $self->{BUILD_SYSTEM} eq 'Module::Build and proxy Makefile.PL') {
+            $self->process_template('Proxy_Makefile.PL', $self, 'Makefile.PL');
+        }
+    }
 
-	$self->print_file ('MANIFEST', join ("\n", @{$self->{MANIFEST}}));
-	$self->log_message('writing MANIFEST');
-	return $self->{Base_Dir};
+    $self->print_file ('MANIFEST', join ("\n", @{$self->{MANIFEST}}));
+    $self->log_message('writing MANIFEST');
+    return $self->{Base_Dir};
 }
 
 =head2 build_single_pm
@@ -247,21 +247,21 @@ the method completes or croaks. Returns a true value if successful.
 =cut
 
 sub build_single_pm {
-	my ($self, $module) = @_;
-	my $module_object;
-	
-	if ( ref($module) ) {
-		if ( $module == $self) {
-			$module_object = $module;
-		} else {
-			$module_object = { %{$self}, %{$module} };
-		}
-	} else {
-		$module_object = { %{$self}, NAME => $module };
-	}
-	
-	# To support calling this function on a standalone basis, look upwards
-	# for a base directory
+    my ($self, $module) = @_;
+    my $module_object;
+    
+    if ( ref($module) ) {
+        if ( $module == $self) {
+            $module_object = $module;
+        } else {
+            $module_object = { %{$self}, %{$module} };
+        }
+    } else {
+        $module_object = { %{$self}, NAME => $module };
+    }
+    
+    # To support calling this function on a standalone basis, look upwards
+    # for a base directory
     my $orig_wd = my $cwd = cwd();
     unless ($self->{Base_Dir}) {
         while ($cwd) {
@@ -274,20 +274,20 @@ sub build_single_pm {
         }
         chdir $orig_wd;
         $self->death_message("Can't locate base directory") unless $self->{Base_Dir};
-    }	
+    }    
 
-	$self->create_pm_basics ($module_object);
-	$module_object->{new_method} = $self->build_single_method('new');
-	# hack to remove subroutine bit	-- a real new sub is in module.pm template
- 	$module_object->{new_method} =~ s/sub new {.*}\n//s; 
+    $self->create_pm_basics ($module_object);
+    $module_object->{new_method} = $self->build_single_method('new');
+    # hack to remove subroutine bit    -- a real new sub is in module.pm template
+     $module_object->{new_method} =~ s/sub new {.*}\n//s; 
     # hack to add class name to call new in example
- 	$module_object->{new_method} =~ s/\$rv = /\$rv = $module_object->{NAME}->/s; 
-	$self->process_template('module.pm', $module_object, $module_object->{FILE});
-	my $testfile = "t/" . $module_object->{NAME} . ".t";
-	$testfile =~ s/::/_/g;
-	$self->process_template('test.t', $module_object, $testfile);
-	chdir $orig_wd;
-	return 1;
+     $module_object->{new_method} =~ s/\$rv = /\$rv = $module_object->{NAME}->/s; 
+    $self->process_template('module.pm', $module_object, $module_object->{FILE});
+    my $testfile = "t/" . $module_object->{NAME} . ".t";
+    $testfile =~ s/::/_/g;
+    $self->process_template('test.t', $module_object, $testfile);
+    chdir $orig_wd;
+    return 1;
 }
 
 =head2 build_single_method
@@ -301,18 +301,18 @@ your favorite editor.
 =cut
 
 sub build_single_method {
-	my ($self,$method_name) = @_;
-	my $results;
-	
-	my $tt = ( $self->{'TEMPLATE_DIR'} ? 
-		Template->new({'INCLUDE_PATH' => $self->{'TEMPLATE_DIR'} }) :
-		Template->new() )
-		or $self->death_message( "Template error: " . Template->error() );
-	my $template_text = $self->{templates}{'method'};
-	$tt->process( $self->{'TEMPLATE_DIR'} ? 'method' : \$template_text,
-	              { %{ $self }, method_name => $method_name }, \$results )
-		or $self->death_message( "Could not write method '$method_name': $tt->error\n" );
-	return $results;	
+    my ($self,$method_name) = @_;
+    my $results;
+    
+    my $tt = ( $self->{'TEMPLATE_DIR'} ? 
+        Template->new({'INCLUDE_PATH' => $self->{'TEMPLATE_DIR'} }) :
+        Template->new() )
+        or $self->death_message( "Template error: " . Template->error() );
+    my $template_text = $self->{templates}{'method'};
+    $tt->process( $self->{'TEMPLATE_DIR'} ? 'method' : \$template_text,
+                  { %{ $self }, method_name => $method_name }, \$results )
+        or $self->death_message( "Could not write method '$method_name': $tt->error\n" );
+    return $results;    
 }
 
 =head2 create_template_directory
@@ -327,14 +327,14 @@ Returns a true value if successful.
 =cut
 
 sub create_template_directory {
-	my ($self, $dir) = @_;
-	$self->check_dir($dir);
-	for my $template ( keys %{ $self->{templates} } ) {
-		open (FILE, ">$dir/$template") or $self->death_message ("Could not write '$dir/$template', $!");
-		print FILE ( $self->{templates}{$template} );
-		close FILE;
-	}
-	return 1;
+    my ($self, $dir) = @_;
+    $self->check_dir($dir);
+    for my $template ( keys %{ $self->{templates} } ) {
+        open (FILE, ">$dir/$template") or $self->death_message ("Could not write '$dir/$template', $!");
+        print FILE ( $self->{templates}{$template} );
+        close FILE;
+    }
+    return 1;
 }
 
 =head1 INTERNAL METHODS
@@ -379,18 +379,18 @@ default templates are used.  Returns a true value if successful.
 =cut
 
 sub process_template {
-	my ($self, $template, $data, $outputfile) = @_;
-	my $tt = ( $self->{'TEMPLATE_DIR'} ? 
-		Template->new({'INCLUDE_PATH' => $self->{'TEMPLATE_DIR'} }) :
-		Template->new() )
-		or $self->death_message( "Template error: " . Template->error() );
-	my $template_text = $self->{templates}{$template};
-	$tt->process( $self->{'TEMPLATE_DIR'} ? $template : \$template_text,
-	              $data, "$self->{Base_Dir}/$outputfile" )
-		or $self->death_message( "Could not write '$outputfile': $tt->error\n" );
-	push @{ $self->{MANIFEST} }, $outputfile;
-	$self->log_message("writing file '$outputfile'");
-	return 1;
+    my ($self, $template, $data, $outputfile) = @_;
+    my $tt = ( $self->{'TEMPLATE_DIR'} ? 
+        Template->new({'INCLUDE_PATH' => $self->{'TEMPLATE_DIR'} }) :
+        Template->new() )
+        or $self->death_message( "Template error: " . Template->error() );
+    my $template_text = $self->{templates}{$template};
+    $tt->process( $self->{'TEMPLATE_DIR'} ? $template : \$template_text,
+                  $data, "$self->{Base_Dir}/$outputfile" )
+        or $self->death_message( "Could not write '$outputfile': $tt->error\n" );
+    push @{ $self->{MANIFEST} }, $outputfile;
+    $self->log_message("writing file '$outputfile'");
+    return 1;
 }
 
 
@@ -403,25 +403,25 @@ hash containing the default templates
 
 Templates included are:
 
-	* README
-	* Changes
-	* Todo
-	* Build.PL
-	* Makefile.PL
-	* Proxy_Makefile.PL
-	* MANIFEST.SKIP
-	* test.t
-	* module.pm
+    * README
+    * Changes
+    * Todo
+    * Build.PL
+    * Makefile.PL
+    * Proxy_Makefile.PL
+    * MANIFEST.SKIP
+    * test.t
+    * module.pm
 
 =cut
 
 sub default_templates {
-	my ($self) = @_;
-	my %templates;
+    my ($self) = @_;
+    my %templates;
 
 #-------------------------------------------------------------------------#
-	
-	$templates{'README'} = <<'EOF';
+    
+    $templates{'README'} = <<'EOF';
 If this is still here it means the programmer was too lazy to create the readme file.
 
 You can create it now by using the command shown below from this directory:
@@ -447,35 +447,35 @@ If you are on a windows box you should use 'nmake' rather than 'make'.
 EOF
 
 #-------------------------------------------------------------------------#
-	
-	$templates{'Changes'} = <<'EOF';
+    
+    $templates{'Changes'} = <<'EOF';
 Revision history for Perl module [%  NAME %]
 
 [%  VERSION %] [% timestamp %]
-	- original skeleton created with ExtUtils::ModuleMaker::TT
+    - original skeleton created with ExtUtils::ModuleMaker::TT
 EOF
-	
-	$templates{'Todo'} = <<'EOF';
+    
+    $templates{'Todo'} = <<'EOF';
 TODO list for Perl module [%  NAME %]
 
 - Nothing yet
 
 EOF
-	
+    
 #-------------------------------------------------------------------------#
-	
-	$templates{'Build.PL'} = <<'EOF';
+    
+    $templates{'Build.PL'} = <<'EOF';
 use Module::Build;
 # See perldoc Module::Build for details of how this works
 
 Module::Build->new( 
-    module_name     => '[%  NAME %]',
-    dist_author     => '[%  AUTHOR.NAME %] <[%  AUTHOR.EMAIL %]>',
+    module_name         => '[%  NAME %]',
+    dist_author         => '[%  AUTHOR.NAME %] <[%  AUTHOR.EMAIL %]>',
 [%- IF LICENSE.match('perl|gpl|artistic') %]
-    license         => '[%  LICENSE %]',
+    license             => '[%  LICENSE %]',
 [%- END %]
-    create_readme   => 1,
-    create_makefile => 'traditional',
+    create_readme       => 1,
+    create_makefile_pl  => 'traditional',
     requires        => {
         # module requirements here
     },
@@ -486,8 +486,8 @@ Module::Build->new(
 EOF
 
 #-------------------------------------------------------------------------#
-	
-	$templates{'Makefile.PL'} = <<'EOF';
+    
+    $templates{'Makefile.PL'} = <<'EOF';
 use ExtUtils::MakeMaker;
 # See lib/ExtUtils/MakeMaker.pm for details of how to influence
 # the contents of the Makefile that is written.
@@ -503,8 +503,8 @@ WriteMakefile(
 EOF
 
 #-------------------------------------------------------------------------#
-	
-	$templates{'Proxy_Makefile.PL'} = <<'EOF';
+    
+    $templates{'Proxy_Makefile.PL'} = <<'EOF';
 unless (eval "use Module::Build::Compat 0.02; 1" ) {
   print "This module requires Module::Build to install itself.\n";
 
@@ -536,8 +536,8 @@ Module::Build::Compat->write_makefile();
 EOF
 
 #-------------------------------------------------------------------------#
-	
-	$templates{'MANIFEST.SKIP'} = <<'EOF';
+    
+    $templates{'MANIFEST.SKIP'} = <<'EOF';
 # Version control files and dirs.
 \bRCS\b
 \bCVS\b
@@ -566,8 +566,8 @@ EOF
 EOF
 
 #-------------------------------------------------------------------------#
-	
-	$templates{'test.t'} = <<'EOF';
+    
+    $templates{'test.t'} = <<'EOF';
 # [%  NAME %] - check module loading and create testing directory
 
 use Test::More tests => [% IF NEED_NEW_METHOD %] 2 [% ELSE %] 1 [% END %];
@@ -580,21 +580,21 @@ isa_ok ($object, '[%  NAME %]');
 EOF
 
 #-------------------------------------------------------------------------#
-	
-	$templates{'module.pm'} = <<'EOF';
+    
+    $templates{'module.pm'} = <<'EOF';
 package [%  NAME %];
 use strict;
 use warnings;
 use Carp;
 
 BEGIN {
-	use Exporter ();
-	use vars qw ($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
-	$VERSION     = '[% VERSION %]';
-	@ISA         = qw (Exporter);
-	@EXPORT      = qw ();
-	@EXPORT_OK   = qw ();
-	%EXPORT_TAGS = ();
+    use Exporter ();
+    use vars qw ($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
+    $VERSION     = '[% VERSION %]';
+    @ISA         = qw (Exporter);
+    @EXPORT      = qw ();
+    @EXPORT_OK   = qw ();
+    %EXPORT_TAGS = ();
 }
 
 [%- IF NEED_POD %]
@@ -627,13 +627,13 @@ Usage...
 [%- IF NEED_NEW_METHOD -%]
 [% new_method -%]
 sub new {
-	my ($class, $parameters) = @_;
+    my ($class, $parameters) = @_;
     
     croak "new() can't be invoked on an object"
         if ref($class);
         
-	my $self = bless ({ }, $class);
-	return $self;
+    my $self = bless ({ }, $class);
+    return $self;
 }
 [% END %]
 1; #this line is important and will help the module return a true value
@@ -674,7 +674,7 @@ perl(1).
 EOF
 
 #-------------------------------------------------------------------------#
-	
+    
 $templates{'method'} = <<'EOF';
 #--------------------------------------------------------------------------#
 # [% method_name %]()
@@ -692,7 +692,7 @@ Description of [% method_name %]...
 
 sub [% method_name %] {
 [% IF NEED_NEW_METHOD -%]
-	my ($self) = @_;
+    my ($self) = @_;
 [% END -%]
 
 }
@@ -700,7 +700,7 @@ sub [% method_name %] {
 EOF
 
 #----------------------------------------------------------------------#
-	
+    
 return %templates;
 
 }
@@ -764,7 +764,7 @@ to overwrite any class data needed elsewhere in the module.
  File::Basename
  Config::General
  Data::Dumper
-	
+    
 =head1 BUGS
 
 None reported yet, though there must be some.  E-mail bug reports to the author.
@@ -778,7 +778,7 @@ E-mail the author
  David A. Golden
  david@dagolden.com
  http://dagolden.com/
-	
+    
 =head1 COPYRIGHT
 
 Copyright (c) 2004 by David A. Golden

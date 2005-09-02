@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 use strict;
-use constant VERSION => '0.77';
+use constant VERSION => '0.78';
 use Getopt::Long;
 use Pod::Usage;
 use Config::General;
@@ -14,8 +14,8 @@ use Cwd;
 # Put option definitions in @opt_def as <name spec>[arg spec]
 # name spec is 'name' or 'name|alias'  (results will be in $opt{name})
 # arg spec is:
-# 	  blank (boolean), ! (negatable), + (incremental), =<type> (required), 
-# 	  :<type> (optional), :<number> (optional, w/ integer default),
+#       blank (boolean), ! (negatable), + (incremental), =<type> (required), 
+#       :<type> (optional), :<number> (optional, w/ integer default),
 # types are "s" (string), "i" (int), "o" (int/octal/hex), "f" (real float)
 # can append a "@" or "%" to store multiples in a list or hash
 # put option defaults in %opts
@@ -23,12 +23,12 @@ use Cwd;
 my @opt_def = ('help|h|?',
                'config|c:s',
                'defaults|d:s',
-			   'templates|t:s',
-			   'newdist|n:s',
-			   'module|m:s',
-			   'subroutine|s:s',
-			   'extra|e:s@',
-			   'version|V',
+               'templates|t:s',
+               'newdist|n:s',
+               'module|m:s',
+               'subroutine|s:s',
+               'extra|e:s@',
+               'version|V',
 );
 
 my %opt = ('help' => 0);
@@ -39,81 +39,81 @@ pod2usage(1) if $opt{help};
 my $cmd_opt_count = grep(/defaults|templates|newdist|module|subroutine|version/, 
                          keys %opt); 
 unless ( $cmd_opt_count == 1  ) {
-	pod2usage(1);
+    pod2usage(1);
 }
 
 # Load config file if specified or search for any default automagically 
 $opt{config} ||= find_file();
 my $config = new Config::General( -ConfigFile => $opt{config},
                                   -AutoTrue => 1 );
-																
+                                                                
 # Initialize
 
 my $mmtt = ExtUtils::ModuleMaker::TT->new( $config->getall, NAME => 'bogus' )
-	or die "Couldn't create ExtUtils::ModuleMaker::TT object";
+    or die "Couldn't create ExtUtils::ModuleMaker::TT object";
 
 # Code goes here
 
 SWITCH: for(1) {
-	
-	$opt{newdist} && do {
-		my $dist_dir = $mmtt->complete_build( NAME => $opt{newdist} );
-		my $cwd = cwd();
-		for ( @{ $opt{extra} } ) {
-			$mmtt->build_single_pm($_);
-		}
-		last;
-	};
+    
+    $opt{newdist} && do {
+        my $dist_dir = $mmtt->complete_build( NAME => $opt{newdist} );
+        my $cwd = cwd();
+        for ( @{ $opt{extra} } ) {
+            $mmtt->build_single_pm($_);
+        }
+        last;
+    };
 
-	$opt{module} && do {
-		for ( $opt{module}, @{ $opt{extra} } ) {
-			$mmtt->build_single_pm($_);
-		}
-		last;
-	};
+    $opt{module} && do {
+        for ( $opt{module}, @{ $opt{extra} } ) {
+            $mmtt->build_single_pm($_);
+        }
+        last;
+    };
 
-	$opt{subroutine} && do {
-		for ( $opt{subroutine}, @{ $opt{extra} } ) {
-			print $mmtt->build_single_method($_) . "\n";
-		}
-		last;
-	};
+    $opt{subroutine} && do {
+        for ( $opt{subroutine}, @{ $opt{extra} } ) {
+            print $mmtt->build_single_method($_) . "\n";
+        }
+        last;
+    };
 
-	$opt{defaults} && do {
-		my $defaults = $mmtt->default_values();
-		$config->save_file($opt{defaults}, $defaults);
-		last;
-	};
+    $opt{defaults} && do {
+        my $defaults = $mmtt->default_values();
+        $config->save_file($opt{defaults}, $defaults);
+        last;
+    };
 
-	$opt{templates} && do {
-		$mmtt->create_template_directory($opt{templates});
-		last;
-	};
-	
-	$opt{version} && do {
-		print "$0 version " . VERSION . "\n";
-		print "Current config hash:\n" . Data::Dumper->Dump ( [{$config->getall}], [qw(config)]);
-		last;
-	}
+    $opt{templates} && do {
+        $mmtt->create_template_directory($opt{templates});
+        last;
+    };
+    
+    $opt{version} && do {
+        print "$0 version " . VERSION . "\n";
+        print "Current config hash:\n" . Data::Dumper->Dump ( [{$config->getall}], [qw(config)]);
+        last;
+    }
 } 
 
 # find_file copied and modified from a version found in Config::Auto
 sub find_file {
-	my $x;
-	my $whoami = basename($0);
-	my $bindir = dirname($0);
-	$whoami =~ s/\.pl$//;
-	for ("${whoami}config", ".${whoami}config", 
-		 "${whoami}.config", ".${whoami}.config",
-		 "${whoami}conf", ".${whoami}conf",
-		 "${whoami}.conf", ".${whoami}.conf",
-	     "${whoami}rc", ".${whoami}rc") {
-		return $_           if -r $_;
-		return $x           if -r ($x=catfile($bindir,$_));
-		return $x           if -r ($x=catfile($ENV{HOME},$_));
-		return $x    		if -r ($x=catfile(rootdir(),"etc",$_));
-	}
-	return undef;
+    my $x;
+    my $whoami = basename($0);
+    my $bindir = dirname($0);
+    $whoami =~ s/\.pl$//;
+    for ("${whoami}config", ".${whoami}config", 
+         "${whoami}.config", ".${whoami}.config",
+         "${whoami}conf", ".${whoami}conf",
+         "${whoami}.conf", ".${whoami}.conf",
+         "${whoami}rc", ".${whoami}rc") {
+        return $_           if -r $_;
+        return $x           if -r ($x=catfile($bindir,$_));
+        return $x           if -r ($x=catfile($ENV{HOME},$_));
+        return $x            if -r ($x=catfile(rootdir(),"etc",$_));
+    }
+    return undef;
 }
 
 exit;
@@ -164,7 +164,7 @@ other standard configuration file locations.  Automatic config
 finding subroutine taken and modified from Config::Auto -- see that
 module or the makeperlmod source for alternative config file locations.
 (E.g., ~/.makeperlmod.conf)
-	
+    
 =head1 OPTIONS
 
 =head2 Mode Options
@@ -233,11 +233,11 @@ be created.  May be used more than once to define multiple extras
 
 Create a custom configuration file
 
-	makeperlmod -d ~/.makeperlmod.config
+    makeperlmod -d ~/.makeperlmod.config
 
 Create a custom template directory
 
-	makeperlmod -t ~/.makeperlmod.templates
+    makeperlmod -t ~/.makeperlmod.templates
  
 Edit the custom configuration file.  Set AUTHOR and other defaults as
 desired.  (Setting COMPACT to 1 is recommended.)  Set TEMPLATE_DIR to
@@ -246,25 +246,25 @@ own custom templates in place of the defaults.
 
 Create a new distribution
 
-	makeperlmod -n Sample::Module::Foo
+    makeperlmod -n Sample::Module::Foo
 
 Create a new distribution with an extra module
 
-	makeperlmod -n Sample::Module::Foo -e Sample::Module::Bar 
+    makeperlmod -n Sample::Module::Foo -e Sample::Module::Bar 
 
 From within the new distribution, add another .pm
 
-	cd Sample-Module-Foo/lib/Sample/Module
-	makeperlmod -m Sample::Module::Baz
+    cd Sample-Module-Foo/lib/Sample/Module
+    makeperlmod -m Sample::Module::Baz
  
 From within an editor, insert a new subroutine skeleton.  E.g. from within
 vi,
 
-	:r! makeperlmod -s sample_method
+    :r! makeperlmod -s sample_method
 
 Or insert several subroutines
 
-	:r! makeperlmod -s sample_method -e method2 -e method3
+    :r! makeperlmod -s sample_method -e method2 -e method3
  
 =head1 BUGS AND SUPPORT
 

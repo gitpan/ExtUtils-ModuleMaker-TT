@@ -1,5 +1,10 @@
 Revision history for Perl module ExtUtils::ModuleMaker::TT
 
+0.78 Fri Sep  2 07:09:03 EDT 2005
+    - fixed incorrect "create_makefile_pl" option in Build.PL template
+    - switched templates to consistently use spaces instead of mixed
+      spaces and tabs for indentation
+
 0.77 Thu Sep  1 21:02:25 EDT 2005
     - changed internals to match changes in ExtUtils::ModuleMaker
     - updated dependencies in Build.PL
@@ -21,20 +26,20 @@ Revision history for Perl module ExtUtils::ModuleMaker::TT
     - switched Makefile.PL to passthrough version from Module::Build
 
 0.73 Tue May 11 17:28:57 EDT 2004
-	- removed Test::Distribution from requirements in Build.PL
-	- make distribution test optional depending on presence of 
-	  Test::Distribution
+    - removed Test::Distribution from requirements in Build.PL
+    - make distribution test optional depending on presence of 
+      Test::Distribution
 
 0.72 Thu Apr 22 07:07:00 EDT 2004
-	- fixed makeperlmod config file bug
+    - fixed makeperlmod config file bug
 
 0.71 Thu Apr 22 06:29:21 EDT 2004
-	- fixed up template bugs
-	- "makeperlmod -d" now takes a file argument rather than sending the
-	  config to stdout
+    - fixed up template bugs
+    - "makeperlmod -d" now takes a file argument rather than sending the
+      config to stdout
 
 0.70 Sun Mar  7 18:56:00 EST 2004
-	- initial release version
-	- basic functionality working
-	- makeperlmod script working
+    - initial release version
+    - basic functionality working
+    - makeperlmod script working
 
