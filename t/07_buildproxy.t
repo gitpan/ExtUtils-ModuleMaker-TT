@@ -1,12 +1,14 @@
 # t/07_buildproxy.t -- tests Module::Build and Proxy
 
 #use Test::More qw/no_plan/;
-use Test::More tests => 19;
+use Test::More tests => 20;
 use File::Temp qw( tempdir );
+use Cwd;
 
 BEGIN { use_ok( 'ExtUtils::ModuleMaker::TT' ); }
 my $tempdir = tempdir( CLEANUP => 1 );
 ok ($tempdir, "making tempdir $tempdir");
+my $orig_dir = cwd();
 ok (chdir $tempdir, "chdir $tempdir");
 
 ###########################################################################
@@ -48,3 +50,4 @@ ok ($filetext =~ m/Loose lips sink ships/,
 
 ###########################################################################
 
+ok (chdir $orig_dir, "chdir $orig_dir");

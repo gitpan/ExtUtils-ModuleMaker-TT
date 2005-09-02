@@ -2,25 +2,27 @@
 use ExtUtils::MakeMaker;
 WriteMakefile
 (
+          'PL_FILES' => {},
+          'INSTALLDIRS' => 'site',
           'NAME' => 'ExtUtils::ModuleMaker::TT',
+          'EXE_FILES' => [
+                           'scripts/makeperlmod'
+                         ],
           'VERSION_FROM' => 'lib/ExtUtils/ModuleMaker/TT.pm',
           'PREREQ_PM' => {
-                           'Config::General' => '2.19',
-                           'Cwd' => '2.12',
-                           'Data::Dumper' => '2.121',
-                           'ExtUtils::ModuleMaker' => '0.32',
-                           'File::Basename' => '0',
-                           'File::Path' => '1.06',
-                           'File::Spec' => '0.87',
-                           'File::Spec::Functions' => '1.3',
-                           'File::Temp' => '0.16',
-                           'Getopt::Long' => '0',
+                           'Getopt::Long' => 0,
                            'Pod::Usage' => '1',
+                           'File::Spec' => '0.87',
+                           'Data::Dumper' => '2.121',
                            'Template' => '2.13',
-                           'Test::More' => '0.47'
-                         },
-          'INSTALLDIRS' => 'site',
-          'EXE_FILES' => [],
-          'PL_FILES' => {}
+                           'Test::More' => '0.47',
+                           'ExtUtils::ModuleMaker' => '0.36',
+                           'File::Temp' => '0.16',
+                           'Config::General' => '2.19',
+                           'File::Path' => '1.06',
+                           'File::Spec::Functions' => '1.3',
+                           'File::Basename' => 0,
+                           'Cwd' => '2.12'
+                         }
         )
 ;

@@ -1,5 +1,13 @@
 TODO list for Perl module ExtUtils::ModuleMaker::TT
 
+Documentation
+
+    - "Supports both [forms of Module::Build]" is fixed in latest EU::MM
+
+    - MANIFEST.SKIP now part of EU::MM
+
+    - return value of complete_build not in POD
+    
 Functionality
 
 	- warnings before overwriting files or a "force=>1" option

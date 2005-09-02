@@ -8,7 +8,7 @@ Module::Build->new
       create_readme => 1,
       license         => 'perl',
 	  requires        => { 
-          ExtUtils::ModuleMaker => 0.32,
+          ExtUtils::ModuleMaker => 0.36,
           Template => 2.13,
           Cwd => 2.12,
           File::Path => 1.06,
@@ -19,10 +19,8 @@ Module::Build->new
           Config::General => 2.19,
           File::Basename => 0,
           Data::Dumper => 2.121,
-      },
-	  build_requires  => { 
           File::Temp => 0.16, 
           Test::More => 0.47,
       },
-	  script_files    => [ 'scripts/makeperlmod' ],
+	  scripts    => { 'scripts/makeperlmod' => 1 },
     )->create_build_script;

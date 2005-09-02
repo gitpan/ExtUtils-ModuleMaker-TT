@@ -2,18 +2,10 @@ package ExtUtils::ModuleMaker::TT;
 use strict;
 use warnings;
 
-BEGIN {
-	use Exporter ();
-	use vars qw ($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
-	$VERSION     = "0.76";
-	@ISA         = qw (ExtUtils::ModuleMaker Exporter);
-	#Give a hoot don't pollute, do not export more than needed by default
-	@EXPORT      = qw ();
-	@EXPORT_OK   = qw ();
-	%EXPORT_TAGS = ();
-}
+use vars qw ($VERSION);
+$VERSION     = "0.77";
 
-use ExtUtils::ModuleMaker;
+use base 'ExtUtils::ModuleMaker';
 use Template;
 use Cwd;
 use File::Spec;
@@ -36,6 +28,14 @@ ExtUtils::ModuleMaker::TT - Makes skeleton modules with Template Toolkit templat
  $mmtt->complete_build();
 
 =head1 DESCRIPTION
+
+I<Note: ExtUtils::ModuleMaker has changed substantially in recent releases.
+This version of ExtUtils::ModuleMaker::TT has been updated to be minimally 
+compatible with these changes, but has not yet been completely overhauled to
+reflect new capabilities in ExtUtils::ModuleMaker (e.g. configuration file 
+support) and unwind some tightly-coupled functions. Please report any bugs 
+you may find.  I am working closely with the maintainer of 
+ExtUtils::ModuleMaker to improve the integration of these two modules.>
 
 This module extends L<ExtUtils::ModuleMaker> to use Template Toolkit 2 (TT2) to
 build skeleton files for a new module.  Templates may either be default
@@ -176,9 +176,12 @@ sub complete_build
 	}
 	
 	$self->verify_values ();
+    
+    $self->{DIST} = $self->{NAME};
+    $self->{DIST} =~ s/::/-/g;
 
 	$self->Create_Base_Directory ();
-	$self->Check_Dir (map { "$self->{Base_Dir}/$_" } qw (lib t scripts));
+	$self->check_dir (map { "$self->{Base_Dir}/$_" } qw (lib t scripts));
 
 	$self->print_file ('LICENSE',		$self->{LicenseParts}{LICENSETEXT});
 
@@ -273,10 +276,12 @@ sub build_single_pm {
         $self->death_message("Can't locate base directory") unless $self->{Base_Dir};
     }	
 
-	$self->Create_PM_Basics ($module_object);
+	$self->create_pm_basics ($module_object);
 	$module_object->{new_method} = $self->build_single_method('new');
 	# hack to remove subroutine bit	-- a real new sub is in module.pm template
  	$module_object->{new_method} =~ s/sub new {.*}\n//s; 
+    # hack to add class name to call new in example
+ 	$module_object->{new_method} =~ s/\$rv = /\$rv = $module_object->{NAME}->/s; 
 	$self->process_template('module.pm', $module_object, $module_object->{FILE});
 	my $testfile = "t/" . $module_object->{NAME} . ".t";
 	$testfile =~ s/::/_/g;
@@ -323,7 +328,7 @@ Returns a true value if successful.
 
 sub create_template_directory {
 	my ($self, $dir) = @_;
-	$self->Check_Dir($dir);
+	$self->check_dir($dir);
 	for my $template ( keys %{ $self->{templates} } ) {
 		open (FILE, ">$dir/$template") or $self->death_message ("Could not write '$dir/$template', $!");
 		print FILE ( $self->{templates}{$template} );
@@ -355,7 +360,8 @@ sub Create_Base_Directory
         join( ($self->{COMPACT}) ? '-' : '/', 
         split (/::|'/, $self->{NAME}))
     );
-    $self->Check_Dir ($self->{Base_Dir});
+    $self->check_dir ($self->{Base_Dir});
+    
 }
 
 
@@ -432,9 +438,9 @@ make test
 make install
 [%- ELSE -%]
 perl Build.PL
-./Build
-./Build test
-./Build install
+perl Build
+perl Build test
+perl Build install
 [%- END -%]
 
 If you are on a windows box you should use 'nmake' rather than 'make'.
@@ -446,7 +452,7 @@ EOF
 Revision history for Perl module [%  NAME %]
 
 [%  VERSION %] [% timestamp %]
-	- original version; created by ExtUtils::ModuleMaker::TT
+	- original skeleton created with ExtUtils::ModuleMaker::TT
 EOF
 	
 	$templates{'Todo'} = <<'EOF';
@@ -462,18 +468,21 @@ EOF
 use Module::Build;
 # See perldoc Module::Build for details of how this works
 
-Module::Build->new
-    ( module_name     => '[%  NAME %]',
-[%- IF LICENSE.match('perl|gpl|artistic') -%]
-      license         => '[%  LICENSE %]',
-[%- END -%]
-	  requires        => {
-	                       # module requirements here
-	                     },
-	  build_requires  => { 
-	                       Test::Simple => 0.44,
-	                     },
-	)->create_build_script;
+Module::Build->new( 
+    module_name     => '[%  NAME %]',
+    dist_author     => '[%  AUTHOR.NAME %] <[%  AUTHOR.EMAIL %]>',
+[%- IF LICENSE.match('perl|gpl|artistic') %]
+    license         => '[%  LICENSE %]',
+[%- END %]
+    create_readme   => 1,
+    create_makefile => 'traditional',
+    requires        => {
+        # module requirements here
+    },
+    build_requires  => { 
+        Test::Simple => 0.44,
+    },
+)->create_build_script;
 EOF
 
 #-------------------------------------------------------------------------#
@@ -533,18 +542,20 @@ EOF
 \bRCS\b
 \bCVS\b
 ,v$
-                                                                                                                    
+.svn/
+
 # ExtUtils::MakeMaker generated files and dirs.
+^MANIFEST\.(?!SKIP)
 ^Makefile$
 ^blib/
 ^blibdirs$
-^pm_to_blib$
+^PM_to_blib$
 ^MakeMaker-\d
                                                                                                                     
 # Module::Build
 ^Build$
 ^_build
-                                                                                                                    
+
 # Temp, old, vi and emacs files.
 ~$
 \.old$
@@ -565,7 +576,7 @@ BEGIN { use_ok( '[%  NAME %]' ); }
 [% IF NEED_NEW_METHOD %]
 my $object = [%  NAME %]->new ();
 isa_ok ($object, '[%  NAME %]');
-[%- END -%]
+[%- END %]
 EOF
 
 #-------------------------------------------------------------------------#
@@ -579,16 +590,17 @@ use Carp;
 BEGIN {
 	use Exporter ();
 	use vars qw ($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
-	$VERSION     = "0.76";
+	$VERSION     = '[% VERSION %]';
 	@ISA         = qw (Exporter);
-	#Give a hoot don't pollute, do not export more than needed by default
 	@EXPORT      = qw ();
 	@EXPORT_OK   = qw ();
 	%EXPORT_TAGS = ();
 }
 
-[%- IF NEED_POD -%]
-##### main pod documentation #####
+[%- IF NEED_POD %]
+#--------------------------------------------------------------------------#
+# main pod documentation 
+#--------------------------------------------------------------------------#
 
 # Below is the stub of documentation for your module. You better edit it!
 
@@ -598,13 +610,16 @@ BEGIN {
 
 [% pod_head1 %] SYNOPSIS
 
-  use [%  NAME %];
-  blah blah blah
+ use [%  NAME %];
+ blah blah blah
 
 [% pod_head1 %] DESCRIPTION
 
+Description...
 
 [% pod_head1 %] USAGE
+
+Usage...
 
 [% pod_cut %]
 
@@ -612,9 +627,13 @@ BEGIN {
 [%- IF NEED_NEW_METHOD -%]
 [% new_method -%]
 sub new {
-	my ($class, %parameters) = @_;
-	my $self = bless ({}, ref ($class) || $class);
-	return ($self);
+	my ($class, $parameters) = @_;
+    
+    croak "new() can't be invoked on an object"
+        if ref($class);
+        
+	my $self = bless ({ }, $class);
+	return $self;
 }
 [% END %]
 1; #this line is important and will help the module return a true value
@@ -625,18 +644,20 @@ __END__
 [% END %]
 [% pod_head1 %] BUGS
 
-
-[% pod_head1 %] SUPPORT
-
+Please report bugs using the CPAN Request Tracker at 
+http://rt.cpan.org/NoAuth/Bugs.html?Dist=[% DIST %]
 
 [% pod_head1 %] AUTHOR
 
- [% AUTHOR.NAME %] [% IF AUTHOR.CPANID %]([% AUTHOR.CPANID %])[% END %]
-[%- IF AUTHOR.ORGANIZATION -%]
- [% AUTHOR.ORGANIZATION %]
+[% AUTHOR.NAME %] [% IF AUTHOR.CPANID %]([% AUTHOR.CPANID %])[% END %]
+[%- IF AUTHOR.ORGANIZATION %]
+
+[% AUTHOR.ORGANIZATION %]
 [%- END %]
- [% AUTHOR.EMAIL %]
- [% AUTHOR.WEBSITE %]
+
+[% AUTHOR.EMAIL %]
+
+[% AUTHOR.WEBSITE %]
 
 [% pod_head1 %] COPYRIGHT
 
@@ -655,13 +676,16 @@ EOF
 #-------------------------------------------------------------------------#
 	
 $templates{'method'} = <<'EOF';
-########################
-#
+#--------------------------------------------------------------------------#
 # [% method_name %]()
-#
+#--------------------------------------------------------------------------#
 
 [% IF NEED_POD -%]
 [% pod_head2 %] [% method_name %]
+
+ $rv = [% method_name %]();
+
+Description of [% method_name %]...
 
 [% pod_cut %]
 [%- END %]

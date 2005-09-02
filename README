@@ -11,6 +11,15 @@ SYNOPSIS
      $mmtt->complete_build();
 
 DESCRIPTION
+    *Note: ExtUtils::ModuleMaker has changed substantially in recent
+    releases. This version of ExtUtils::ModuleMaker::TT has been updated to
+    be minimally compatible with these changes, but has not yet been
+    completely overhauled to reflect new capabilities in
+    ExtUtils::ModuleMaker (e.g. configuration file support) and unwind some
+    tightly-coupled functions. Please report any bugs you may find. I am
+    working closely with the maintainer of ExtUtils::ModuleMaker to improve
+    the integration of these two modules.*
+
     This module extends ExtUtils::ModuleMaker to use Template Toolkit 2
     (TT2) to build skeleton files for a new module. Templates may either be
     default templates supplied within the module or user-customized
@@ -67,8 +76,8 @@ USAGE
 
     See the makeperlmod man page for details on creating a custom
     configuration file (for setting author details and other
-    ExtUtils::ModuleMaker options). The "CUSTOMIZING TEMPLATES" section
-    below contains other examples.
+    ExtUtils::ModuleMaker options). The CUSTOMIZING TEMPLATES section below
+    contains other examples.
 
     ExtUtils::ModuleMaker::TT can also be used programatically via the
     object methods defined below. The makeperlmod source provides a
@@ -76,14 +85,16 @@ USAGE
 
 PUBLIC METHODS
   new
+
         $mmtt = ExtUtils::ModuleMaker::TT->new ( %config );
 
     Uses the same configuration options as ExtUtils::ModuleMaker. Users may
     also define a *TEMPLATE_DIR* parameter, in which case that directory
-    will be used as the source for all templates. See "CUSTOMIZING
-    TEMPLATES", below. Returns a new ExtUtils::ModuleMaker::TT object.
+    will be used as the source for all templates. See CUSTOMIZING TEMPLATES,
+    below. Returns a new ExtUtils::ModuleMaker::TT object.
 
   complete_build
+
         $mmtt->complete_build();
 
     or
@@ -96,6 +107,7 @@ PUBLIC METHODS
     scripts.)
 
   build_single_pm
+
         $mmtt->build_single_pm( $module );
 
     Creates a new .pm file and a corresponding .t file.
@@ -126,6 +138,7 @@ PUBLIC METHODS
     successful.
 
   build_single_method
+
         $mmtt->build_single_method( $method_name );
 
     Returns a string with a skeleton method header for the given
@@ -133,12 +146,13 @@ PUBLIC METHODS
     to be called from your favorite editor.
 
   create_template_directory
+
         $mmtt->create_template_directory( $directory );
 
     Creates the named *$directory* and populates it with a file for each
     default template. These can be customized and the directory used in
     conjunction with the *TEMPLATE_DIR* configuration options. See
-    "CUSTOMIZING TEMPLATES", below. Returns a true value if successful.
+    CUSTOMIZING TEMPLATES, below. Returns a true value if successful.
 
 INTERNAL METHODS
     These methods are used internally. They are documented for developer
@@ -146,10 +160,12 @@ INTERNAL METHODS
     encouraged to avoid using them.
 
   Create_Base_Directory
+
     Overrides the parent. Same function, but sets the Base_Dir parameter to
     an absolute file path. (Helpful for single-module builds)
 
   process_template
+
         $mmtt->process_template( $template, \%data, $outputfile );
 
     Calls TT to fill in the template and write it to the output file.
@@ -160,6 +176,7 @@ INTERNAL METHODS
     successful.
 
   default_templates
+
         $mmtt->default_templates();
  
     Generates the default templates from <<HERE statements in the code.
@@ -179,6 +196,7 @@ INTERNAL METHODS
 
 CUSTOMIZING TEMPLATES
   Overview
+
     Use the makeperlmod script to create a directory containing a copy of
     the default templates. Alternatively, use the create_template_directory
     method directly. Edit these templates to suit personal taste or style
@@ -186,13 +204,14 @@ CUSTOMIZING TEMPLATES
     making modules.
 
   Customizing with makeperlmod
+
     This can all be done quite easily with makeperlmod. Begin with:
 
         makeperlmod -d ~/.makeperlmod.config
         makeperlmod -t ~/.makeperlmod.templates
 
-    Edit .makeperlmod.config and add "TEMPLATE_DIR
-    ~/.makeperlmod.templates". Make any other desired edits to AUTHOR,
+    Edit .makeperlmod.config and add `TEMPLATE_DIR
+    ~/.makeperlmod.templates'. Make any other desired edits to AUTHOR,
     COMPACT, etc. (COMPACT is recommended.)
 
     Edit the resulting templates as needed. Templates are written with the
@@ -205,6 +224,7 @@ CUSTOMIZING TEMPLATES
         makeperlmod -n My::New::Module
 
   Creating custom template variables (use with caution)
+
     When templates are processed, the entire ExtUtils::ModuleMaker::TT
     object is passed to the Template Toolkit. Thus any class data is
     available for use in templates. Users may add custom configuration
