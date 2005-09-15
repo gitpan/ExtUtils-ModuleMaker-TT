@@ -16,7 +16,7 @@ WriteMakefile
                            'Data::Dumper' => '2.121',
                            'Template' => '2.13',
                            'Test::More' => '0.47',
-                           'ExtUtils::ModuleMaker' => '0.36',
+                           'ExtUtils::ModuleMaker' => '0.39',
                            'File::Temp' => '0.16',
                            'Config::General' => '2.19',
                            'File::Path' => '1.06',

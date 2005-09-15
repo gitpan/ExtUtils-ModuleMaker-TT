@@ -3,7 +3,7 @@ use strict;
 use warnings;
 
 use vars qw ($VERSION);
-$VERSION     = "0.78";
+$VERSION     = "0.79";
 
 use base 'ExtUtils::ModuleMaker';
 use Template;
@@ -33,7 +33,8 @@ I<Note: ExtUtils::ModuleMaker has changed substantially in recent releases.
 This version of ExtUtils::ModuleMaker::TT has been updated to be minimally 
 compatible with these changes, but has not yet been completely overhauled to
 reflect new capabilities in ExtUtils::ModuleMaker (e.g. configuration file 
-support) and unwind some tightly-coupled functions. Please report any bugs 
+support) and unwind some tightly-coupled functions. Documentation is 
+likewise lagging slightly.  Please report any bugs 
 you may find.  I am working closely with the maintainer of 
 ExtUtils::ModuleMaker to improve the integration of these two modules.>
 
@@ -175,7 +176,7 @@ sub complete_build
         $self->{$_} = $args{$_};
     }
     
-    $self->verify_values ();
+    $self->validate_values ();
     
     $self->{DIST} = $self->{NAME};
     $self->{DIST} =~ s/::/-/g;
@@ -590,7 +591,7 @@ use Carp;
 BEGIN {
     use Exporter ();
     use vars qw ($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
-    $VERSION     = '[% VERSION %]';
+    $VERSION     = "0.79";
     @ISA         = qw (Exporter);
     @EXPORT      = qw ();
     @EXPORT_OK   = qw ();

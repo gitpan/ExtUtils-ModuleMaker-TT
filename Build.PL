@@ -8,7 +8,7 @@ Module::Build->new
       create_readme => 1,
       license         => 'perl',
 	  requires        => { 
-          ExtUtils::ModuleMaker => 0.36,
+          ExtUtils::ModuleMaker => 0.39,
           Template => 2.13,
           Cwd => 2.12,
           File::Path => 1.06,

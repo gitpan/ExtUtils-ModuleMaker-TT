@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 use strict;
-use constant VERSION => '0.78';
+use constant VERSION => '0.79';
 use Getopt::Long;
 use Pod::Usage;
 use Config::General;

@@ -16,9 +16,10 @@ DESCRIPTION
     be minimally compatible with these changes, but has not yet been
     completely overhauled to reflect new capabilities in
     ExtUtils::ModuleMaker (e.g. configuration file support) and unwind some
-    tightly-coupled functions. Please report any bugs you may find. I am
-    working closely with the maintainer of ExtUtils::ModuleMaker to improve
-    the integration of these two modules.*
+    tightly-coupled functions. Documentation is likewise lagging slightly.
+    Please report any bugs you may find. I am working closely with the
+    maintainer of ExtUtils::ModuleMaker to improve the integration of these
+    two modules.*
 
     This module extends ExtUtils::ModuleMaker to use Template Toolkit 2
     (TT2) to build skeleton files for a new module. Templates may either be

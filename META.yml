@@ -1,6 +1,6 @@
 ---
 name: ExtUtils-ModuleMaker-TT
-version: 0.78
+version: 0.79
 author:
   - David A Golden <dagolden@cpan.org>
 abstract: Makes skeleton modules with Template Toolkit templates
@@ -9,7 +9,7 @@ requires:
   Config::General: 2.19
   Cwd: 2.12
   Data::Dumper: 2.121
-  ExtUtils::ModuleMaker: 0.36
+  ExtUtils::ModuleMaker: 0.39
   File::Basename: 0
   File::Path: 1.06
   File::Spec: 0.87
@@ -22,5 +22,5 @@ requires:
 provides:
   ExtUtils::ModuleMaker::TT:
     file: lib/ExtUtils/ModuleMaker/TT.pm
-    version: 0.78
+    version: 0.79
 generated_by: Module::Build version 0.2702
