@@ -1,18 +1,19 @@
 package ExtUtils::ModuleMaker::TT;
 use strict;
-use warnings;
+local $^W = 1;
+use vars qw ( $VERSION );
+$VERSION = "0.80";
 
-use vars qw ($VERSION);
-$VERSION     = "0.79";
-
-use base 'ExtUtils::ModuleMaker';
+use base 'ExtUtils::ModuleMaker::StandardText';
+use ExtUtils::ModuleMaker::Utility qw( _get_dir_and_file );
 use Template;
 use Cwd;
 use File::Spec;
+use File::Path;
+use Path::Class;
 
-########################################### main pod documentation begin ##
-# Below is the stub of documentation for your module. You better edit it!
-
+# predeclare
+our %templates;
 
 =head1 NAME
 
@@ -143,78 +144,6 @@ Returns a new ExtUtils::ModuleMaker::TT object.
 
 =cut
 
-sub new
-{
-    my ($class, %parameters) = @_;
-    my $self = ExtUtils::ModuleMaker::new($class, %parameters);
-    $self->{templates} = { $self->default_templates() };
-    $self->{pod_head1} = "=head1";
-    $self->{pod_head2} = "=head2";
-    $self->{pod_cut} = "=cut";
-    return $self;
-}
-
-=head2 complete_build
-
-    $mmtt->complete_build();
-
-or
-
-    $mmtt->complete_build( NAME => 'Sample::Module' );
-
-Builds a complete distribution skeleton.  Any named parameters are added 
-to the configuration (overwriting any existing values) prior to building.
-It returns the distribution directory created.  (Helpful in scripts.)
- 
-=cut
-
-sub complete_build
-{
-    my ($self, %args) = @_;
-    
-    for (keys %args) {
-        $self->{$_} = $args{$_};
-    }
-    
-    $self->validate_values ();
-    
-    $self->{DIST} = $self->{NAME};
-    $self->{DIST} =~ s/::/-/g;
-
-    $self->Create_Base_Directory ();
-    $self->check_dir (map { "$self->{Base_Dir}/$_" } qw (lib t scripts));
-
-    $self->print_file ('LICENSE',        $self->{LicenseParts}{LICENSETEXT});
-
-    $self->process_template('README', $self, 'README');
-    $self->process_template('Todo', $self, 'Todo');
-    $self->process_template('MANIFEST.SKIP', $self, 'MANIFEST.SKIP');
-
-    unless ($self->{CHANGES_IN_POD}) {
-        $self->process_template('Changes', $self, 'Changes');
-    }
-
-    foreach my $module ($self, @{$self->{EXTRA_MODULES}}) {
-        # Need to add config keys to extra modules (w/o overwriting NAME)
-        $self->build_single_pm($module);
-    }
-
-    #Makefile must be created after generate_pm_file which sets $self->{FILE}
-    if ($self->{BUILD_SYSTEM} eq 'ExtUtils::MakeMaker') {
-        $self->process_template('Makefile.PL', $self, 'Makefile.PL');
-    } else {
-        $self->process_template('Build.PL', $self, 'Build.PL');
-        if ($self->{BUILD_SYSTEM} eq 'Module::Build and Proxy' or
-            $self->{BUILD_SYSTEM} eq 'Module::Build and proxy Makefile.PL') {
-            $self->process_template('Proxy_Makefile.PL', $self, 'Makefile.PL');
-        }
-    }
-
-    $self->print_file ('MANIFEST', join ("\n", @{$self->{MANIFEST}}));
-    $self->log_message('writing MANIFEST');
-    return $self->{Base_Dir};
-}
-
 =head2 build_single_pm
 
     $mmtt->build_single_pm( $module );
@@ -263,30 +192,44 @@ sub build_single_pm {
     
     # To support calling this function on a standalone basis, look upwards
     # for a base directory
-    my $orig_wd = my $cwd = cwd();
+    # (abs->rel) is a workaround to drop the volume on MSWin32
+    my $orig_wd = my $cwd = dir()->absolute;
+    my $root_dir = dir(q{})->absolute;
     unless ($self->{Base_Dir}) {
-        while ($cwd) {
+        while (! $cwd->subsumes($root_dir)) {
             chdir $cwd;
             if ( -e 'MANIFEST' and -d 'lib' ) {
                 $self->{Base_Dir} = $cwd; 
                 last;
             }
-            $cwd =~ s|/[^/]*$||;
+            $cwd = $cwd->parent;
         }
         chdir $orig_wd;
-        $self->death_message("Can't locate base directory") unless $self->{Base_Dir};
+        $self->death_message(["Can't locate base directory"]) 
+            unless $self->{Base_Dir};
     }    
 
-    $self->create_pm_basics ($module_object);
+    my ( $dir, $file ) = _get_dir_and_file( $module_object );
+    $self->create_directory( File::Spec->catdir($self->{Base_Dir}, $dir ));
+
     $module_object->{new_method} = $self->build_single_method('new');
     # hack to remove subroutine bit    -- a real new sub is in module.pm template
      $module_object->{new_method} =~ s/sub new {.*}\n//s; 
     # hack to add class name to call new in example
      $module_object->{new_method} =~ s/\$rv = /\$rv = $module_object->{NAME}->/s; 
-    $self->process_template('module.pm', $module_object, $module_object->{FILE});
-    my $testfile = "t/" . $module_object->{NAME} . ".t";
-    $testfile =~ s/::/_/g;
-    $self->process_template('test.t', $module_object, $testfile);
+     
+    $self->print_file( 
+        File::Spec->catfile( $dir, $file ), 
+        $self->text_pm_file( $module_object ) 
+    );
+
+    (my $clean_name = $module_object->{NAME} ) =~ s/::/_/g;
+    my $testfile = File::Spec->catfile( "t", $clean_name . ".t" );
+    $self->print_file(
+        $testfile,
+        $self->text_test( $clean_name, $module_object )
+    );
+
     chdir $orig_wd;
     return 1;
 }
@@ -308,13 +251,89 @@ sub build_single_method {
     my $tt = ( $self->{'TEMPLATE_DIR'} ? 
         Template->new({'INCLUDE_PATH' => $self->{'TEMPLATE_DIR'} }) :
         Template->new() )
-        or $self->death_message( "Template error: " . Template->error() );
-    my $template_text = $self->{templates}{'method'};
+        or $self->death_message([ "Template error: $Template::ERROR" ]);
+    my $template_text = $templates{'method'};
     $tt->process( $self->{'TEMPLATE_DIR'} ? 'method' : \$template_text,
                   { %{ $self }, method_name => $method_name }, \$results )
-        or $self->death_message( "Could not write method '$method_name': $tt->error\n" );
+        or $self->death_message([ "Could not write method '$method_name': " 
+            . $tt->error()  ]);
     return $results;    
 }
+
+
+#--------------------------------------------------------------------------#
+# subclassing ExtUtils::ModuleMaker::StandardText
+#--------------------------------------------------------------------------#
+
+
+sub text_README {
+    my $self = shift;
+    return $self->process_template( 'README', $self );
+}
+
+sub text_Todo {
+    my $self = shift;
+    return $self->process_template( 'Todo', $self );
+}
+
+sub text_Changes {
+    my $self = shift;
+    return $self->process_template( 'Changes', $self );
+}
+
+sub text_test {
+    my ( $self, $test_filename, $module_data ) = @_;
+    return $self->process_template( 'test.t', $module_data );
+}
+
+sub text_test_multi {
+    my ( $self, $testfilename, $pmfilesref ) = @_;
+    my @pmfiles = @{$pmfilesref};
+    return $self->process_template( 'test.t', $self );
+}
+
+sub text_Makefile {
+    my $self = shift;
+    return $self->process_template( 'Makefile.PL', $self );
+}
+
+
+sub text_Buildfile {
+    my $self = shift;
+    return $self->process_template( 'Build.PL', $self );
+}
+
+sub text_proxy_makefile {
+    my $self = shift;
+    return $self->process_template( 'Proxy_Makefile.PL', $self );
+}
+
+sub text_MANIFEST_SKIP {
+    my $self = shift;
+    return $self->process_template( 'MANIFEST.SKIP', $self );
+}
+
+sub text_pod_coverage_test {
+    my $self = shift;
+    return $self->process_template( 'pod_coverage_test.t', $self );
+}
+
+sub text_pod_test {
+    my $self = shift;
+    return $self->process_template( 'pod_test.t', $self );
+}
+
+sub text_pm_file {
+    my $self = shift;
+    my $module_data = shift;
+      
+    return $self->process_template( 'module.pm', $module_data );
+}
+
+#--------------------------------------------------------------------------#
+# Template handling
+#--------------------------------------------------------------------------#
+
 
 =head2 create_template_directory
 
@@ -328,44 +347,16 @@ Returns a true value if successful.
 =cut
 
 sub create_template_directory {
-    my ($self, $dir) = @_;
-    $self->check_dir($dir);
-    for my $template ( keys %{ $self->{templates} } ) {
-        open (FILE, ">$dir/$template") or $self->death_message ("Could not write '$dir/$template', $!");
-        print FILE ( $self->{templates}{$template} );
+    my ($class, $dir) = @_;
+    mkpath $dir;
+    for my $template ( keys %templates ) {
+        my $target = File::Spec->catdir($dir, $template);
+        open (FILE, ">", $target) or croak ("Could not write '$target', $!");
+        print FILE ( $templates{$template} );
         close FILE;
     }
     return 1;
 }
-
-=head1 INTERNAL METHODS
-
-These methods are used internally. They are documented for developer purposes
-only and may change in future releases.  End users are encouraged to avoid 
-using them.
-
-=head2 Create_Base_Directory
-
-Overrides the parent.  Same function, but sets the Base_Dir parameter
-to an absolute file path.  (Helpful for single-module builds)
-
-=cut
-
-################################################## subroutine header end ##
-
-sub Create_Base_Directory
-{
-    my $self = shift;
-
-    $self->{Base_Dir} = File::Spec->rel2abs(
-        join( ($self->{COMPACT}) ? '-' : '/', 
-        split (/::|'/, $self->{NAME}))
-    );
-    $self->check_dir ($self->{Base_Dir});
-    
-}
-
-
 
 =head2 process_template
 
@@ -380,18 +371,19 @@ default templates are used.  Returns a true value if successful.
 =cut
 
 sub process_template {
-    my ($self, $template, $data, $outputfile) = @_;
+    my ($self, $template, $data) = @_;
     my $tt = ( $self->{'TEMPLATE_DIR'} ? 
         Template->new({'INCLUDE_PATH' => $self->{'TEMPLATE_DIR'} }) :
         Template->new() )
-        or $self->death_message( "Template error: " . Template->error() );
-    my $template_text = $self->{templates}{$template};
+        or $self->death_message([ "Template error: $Template::ERROR" ]);
+    my $template_text = $templates{$template};
+    my $output_text;
     $tt->process( $self->{'TEMPLATE_DIR'} ? $template : \$template_text,
-                  $data, "$self->{Base_Dir}/$outputfile" )
-        or $self->death_message( "Could not write '$outputfile': $tt->error\n" );
-    push @{ $self->{MANIFEST} }, $outputfile;
-    $self->log_message("writing file '$outputfile'");
-    return 1;
+                  $data, \$output_text )
+        or $self->death_message([ 
+            "Could not generate $template contents: " . $tt->error() 
+        ]);
+    return $output_text;
 }
 
 
@@ -416,9 +408,6 @@ Templates included are:
 
 =cut
 
-sub default_templates {
-    my ($self) = @_;
-    my %templates;
 
 #-------------------------------------------------------------------------#
     
@@ -700,12 +689,30 @@ sub [% method_name %] {
 
 EOF
 
-#----------------------------------------------------------------------#
-    
-return %templates;
+#--------------------------------------------------------------------------#
 
-}
+$templates{'pod_coverage.t'} = <<'END_OF_POD_COVERAGE_TEST';
+#!perl -T
+
+use Test::More;
+eval "use Test::Pod::Coverage 1.04";
+plan skip_all => "Test::Pod::Coverage 1.04 required for testing POD coverage"
+    if $@;
+all_pod_coverage_ok();
+END_OF_POD_COVERAGE_TEST
+
+#----------------------------------------------------------------------#
  
+$templates{'pod_coverage.t'} = <<'END_OF_POD_TEST';
+#!perl -T
+
+use Test::More;
+eval "use Test::Pod 1.14";
+plan skip_all => "Test::Pod 1.14 required for testing POD" if $@;
+all_pod_files_ok();
+END_OF_POD_TEST
+
+
 1; #this line is important and will help the module return a true value
 __END__
 

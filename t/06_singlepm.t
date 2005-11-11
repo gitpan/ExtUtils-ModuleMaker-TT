@@ -2,69 +2,71 @@
 # tree
 
 #use Test::More qw/no_plan/;
-use Test::More tests => 15;
-use File::Temp qw( tempdir );
-use Cwd;
+use Test::More tests => 12;
+use File::pushd;
 
-BEGIN { use_ok( 'ExtUtils::ModuleMaker::TT' ); }
-my $tempdir = tempdir( CLEANUP => 1 );
-ok ($tempdir, "making tempdir $tempdir");
-my $orig_dir = cwd();
-ok (chdir $tempdir, "chdir $tempdir");
+BEGIN { use_ok( 'ExtUtils::ModuleMaker' ); }
 
-###########################################################################
+{
+    my $dir = tempd();
 
-my $MOD;
+    my $MOD;
 
-ok ($MOD  = ExtUtils::ModuleMaker::TT->new
-			(
-				NAME		=> 'Sample::Module::Foo',
-				COMPACT		=> 1,
-				LICENSE		=> 'looselips',
-				BUILD_SYSTEM => 'Module::Build'
-			),
-	"call ExtUtils::ModuleMaker::TT->new");
+    ok ($MOD  = ExtUtils::ModuleMaker->new
+            (
+                NAME		=> 'Sample::Module::Foo',
+                ALT_BUILD => 'ExtUtils::ModuleMaker::TT',
+                TEST_NAME_DERIVED_FROM_MODULE_NAME => 1,
+                INCLUDE_MANIFEST_SKIP => 1,
+                COMPACT		=> 1,
+                LICENSE		=> 'looselips',
+                BUILD_SYSTEM => 'Module::Build'
+            ),
+        "call ExtUtils::ModuleMaker->new");
 
-ok ($MOD->complete_build (),
-	"call \$MOD->complete_build");
-	
-ok (chdir 'Sample-Module-Foo',
-	"cd Sample-Module-Foo");
+    ok ($MOD->complete_build (),
+        "call \$MOD->complete_build");
+        
+    ok (chdir 'Sample-Module-Foo',
+        "cd Sample-Module-Foo");
 
-ok ($MOD->build_single_pm({ NAME => 'Sample::Module::Bar'}),
-	"call \$MOD->build_single_pm");
+    ok ($MOD->build_single_pm({ NAME => 'Sample::Module::Bar'}),
+        "call \$MOD->build_single_pm");
 
-ok ( -e 'lib/Sample/Module/Bar.pm' ,
-	"new module file successfully created");
+    ok ( -e 'lib/Sample/Module/Bar.pm' ,
+        "new module file successfully created");
 
-ok ( -e 't/Sample_Module_Bar.t',
-	"new test file successfully created");
+    ok ( -e 't/Sample_Module_Bar.t',
+        "new test file successfully created");
 
-###########################################################################
+    ###########################################################################
 
-# test from a deep directory
+    # test from a deep directory
 
-my $tgtdir = 'lib/Sample/Module';
-ok (chdir $tgtdir,
-	"cd $tgtdir");
-
-ok ($MOD  = ExtUtils::ModuleMaker::TT->new
-			(
-				NAME		=> 'Sample::Module::Foo',
-				COMPACT		=> 1,
-				LICENSE		=> 'looselips',
-				BUILD_SYSTEM => 'Module::Build'
-			),
-	"call ExtUtils::ModuleMaker::TT->new");
-
-ok ($MOD->build_single_pm({ NAME => 'Sample::Module::Bar'}),
-	"call \$MOD->build_single_pm");
-
-ok ( -e ($MOD->{Base_Dir} . "/lib/Sample/Module/Bar.pm") ,
-	"new module file successfully created");
-
-ok ( -e ($MOD->{Base_Dir} . "/t/Sample_Module_Bar.t"),
-	"new test file successfully created");
+    my $tgtdir = 'lib/Sample/Module';
+    ok (chdir $tgtdir,
+        "cd $tgtdir");
 
 
-ok (chdir $orig_dir, "chdir $orig_dir");
+    ok ($MOD  = ExtUtils::ModuleMaker->new
+            (
+                NAME		=> 'Sample::Module::Foo',
+                ALT_BUILD => 'ExtUtils::ModuleMaker::TT',
+                TEST_NAME_DERIVED_FROM_MODULE_NAME => 1,
+                INCLUDE_MANIFEST_SKIP => 1,
+                COMPACT		=> 1,
+                LICENSE		=> 'looselips',
+                BUILD_SYSTEM => 'Module::Build'
+            ),
+        "call ExtUtils::ModuleMaker->new from deep directory");
+
+    ok ($MOD->build_single_pm({ NAME => 'Sample::Module::Bar'}),
+        "call \$MOD->build_single_pm");
+
+    ok ( -e ($MOD->{Base_Dir} . "/lib/Sample/Module/Bar.pm") ,
+        "new module file successfully created");
+
+    ok ( -e ($MOD->{Base_Dir} . "/t/Sample_Module_Bar.t"),
+        "new test file successfully created");
+
+}

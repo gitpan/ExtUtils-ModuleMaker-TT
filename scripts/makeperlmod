@@ -1,13 +1,13 @@
 #!/usr/bin/perl -w
 use strict;
-use constant VERSION => '0.79';
+use constant VERSION => '0.80';
 use Getopt::Long;
 use Pod::Usage;
 use Config::General;
 use File::Spec::Functions;
 use File::Basename;
 use Data::Dumper;
-use ExtUtils::ModuleMaker::TT;
+use ExtUtils::ModuleMaker;
 use Cwd;
 
 # Command line option handling:
@@ -44,19 +44,22 @@ unless ( $cmd_opt_count == 1  ) {
 
 # Load config file if specified or search for any default automagically 
 $opt{config} ||= find_file();
-my $config = new Config::General( -ConfigFile => $opt{config},
-                                  -AutoTrue => 1 );
-                                                                
+my $config = Config::General->new( -ConfigFile => $opt{config}, -AutoTrue => 1 );
+
 # Initialize
 
-my $mmtt = ExtUtils::ModuleMaker::TT->new( $config->getall, NAME => 'bogus' )
-    or die "Couldn't create ExtUtils::ModuleMaker::TT object";
-
+my $mmtt;    
 # Code goes here
 
 SWITCH: for(1) {
     
     $opt{newdist} && do {
+        $mmtt = ExtUtils::ModuleMaker->new( 
+            $config->getall, 
+            COMPACT => 1,
+            ALT_BUILD => 'ExtUtils::ModuleMaker::TT',
+            NAME => $opt{newdist},
+        ) or die "Couldn't create ExtUtils::ModuleMaker::TT object";
         my $dist_dir = $mmtt->complete_build( NAME => $opt{newdist} );
         my $cwd = cwd();
         for ( @{ $opt{extra} } ) {
@@ -66,6 +69,12 @@ SWITCH: for(1) {
     };
 
     $opt{module} && do {
+        $mmtt = ExtUtils::ModuleMaker->new( 
+            $config->getall, 
+            COMPACT => 1,
+            ALT_BUILD => 'ExtUtils::ModuleMaker::TT',
+            NAME => 'bogus',
+        ) or die "Couldn't create ExtUtils::ModuleMaker::TT object";
         for ( $opt{module}, @{ $opt{extra} } ) {
             $mmtt->build_single_pm($_);
         }
@@ -73,6 +82,12 @@ SWITCH: for(1) {
     };
 
     $opt{subroutine} && do {
+        $mmtt = ExtUtils::ModuleMaker->new( 
+            $config->getall, 
+            COMPACT => 1,
+            ALT_BUILD => 'ExtUtils::ModuleMaker::TT',
+            NAME => 'bogus',
+        ) or die "Couldn't create ExtUtils::ModuleMaker::TT object";
         for ( $opt{subroutine}, @{ $opt{extra} } ) {
             print $mmtt->build_single_method($_) . "\n";
         }
@@ -80,12 +95,24 @@ SWITCH: for(1) {
     };
 
     $opt{defaults} && do {
+        $mmtt = ExtUtils::ModuleMaker->new( 
+            $config->getall, 
+            COMPACT => 1,
+            ALT_BUILD => 'ExtUtils::ModuleMaker::TT',
+            NAME => 'bogus',
+        ) or die "Couldn't create ExtUtils::ModuleMaker::TT object";
         my $defaults = $mmtt->default_values();
         $config->save_file($opt{defaults}, $defaults);
         last;
     };
 
     $opt{templates} && do {
+        $mmtt = ExtUtils::ModuleMaker->new( 
+            $config->getall, 
+            COMPACT => 1,
+            ALT_BUILD => 'ExtUtils::ModuleMaker::TT',
+            NAME => 'bogus',
+        ) or die "Couldn't create ExtUtils::ModuleMaker::TT object";
         $mmtt->create_template_directory($opt{templates});
         last;
     };
@@ -133,6 +160,15 @@ makeperlmod - Perl program for creating new modules with ExtUtils::ModuleMaker::
 
 This program is a front-end to ExtUtils::ModuleMaker::TT.  It 
 supports:
+
+I<Note: ExtUtils::ModuleMaker has changed substantially in recent releases.
+This version of modulemaker has been updated to be minimally 
+compatible with these changes, but has not yet been completely overhauled to
+reflect new capabilities in ExtUtils::ModuleMaker (e.g. configuration file 
+support) and unwind some tightly-coupled functions. Documentation is 
+likewise lagging slightly.  Please report any bugs 
+you may find.  I am working closely with the maintainer of 
+ExtUtils::ModuleMaker to improve the integration of these two modules.>
 
 =over
 

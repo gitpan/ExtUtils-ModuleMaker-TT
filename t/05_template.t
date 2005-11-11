@@ -1,41 +1,27 @@
 # t/05_template.t -- tests abilty to create template directory
 
 #use Test::More qw/no_plan/;
-use Test::More tests => 17;
-use File::Temp qw( tempdir );
-use Cwd;
+use Test::More tests => 15;
+use File::pushd;
 
 BEGIN { use_ok( 'ExtUtils::ModuleMaker::TT' ); }
-my $tempdir = tempdir( CLEANUP => 1 );
-ok ($tempdir, "making tempdir $tempdir");
-my $orig_dir = cwd();
-ok (chdir $tempdir, "chdir $tempdir");
+BEGIN { use_ok( 'ExtUtils::ModuleMaker::TT' ); }
 
-###########################################################################
+{
+    my $dir = tempd();
 
-my $MOD;
+    ok (ExtUtils::ModuleMaker::TT->create_template_directory('templates'),
+        "create_template_directory");
 
-ok ($MOD  = ExtUtils::ModuleMaker::TT->new
-			(
-				NAME		=> 'Sample::Module::Foo',
-				COMPACT		=> 1,
-				LICENSE		=> 'looselips',
-			),
-	"call ExtUtils::ModuleMaker::TT->new");
-	
-ok ($MOD->create_template_directory('templates'),
-	"call \$MOD->create_template_directory");
+    ###########################################################################
 
-###########################################################################
+    ok (chdir 'templates',
+        "cd templates");
 
-ok (chdir 'templates',
-	"cd templates");
+    #        MANIFEST.SKIP .cvsignore
+    for ( keys %ExtUtils::ModuleMaker::TT::templates ) {
+        ok (-e,
+            "$_ exists");
+    }
 
-#        MANIFEST.SKIP .cvsignore
-for ( keys %{ $MOD->{templates}} ) {
-    ok (-e,
-		"$_ exists");
 }
-
-
-ok (chdir $orig_dir, "chdir $orig_dir");

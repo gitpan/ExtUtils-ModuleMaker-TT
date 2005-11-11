@@ -94,19 +94,6 @@ PUBLIC METHODS
     will be used as the source for all templates. See CUSTOMIZING TEMPLATES,
     below. Returns a new ExtUtils::ModuleMaker::TT object.
 
-  complete_build
-
-        $mmtt->complete_build();
-
-    or
-
-        $mmtt->complete_build( NAME => 'Sample::Module' );
-
-    Builds a complete distribution skeleton. Any named parameters are added
-    to the configuration (overwriting any existing values) prior to
-    building. It returns the distribution directory created. (Helpful in
-    scripts.)
-
   build_single_pm
 
         $mmtt->build_single_pm( $module );
@@ -154,16 +141,6 @@ PUBLIC METHODS
     default template. These can be customized and the directory used in
     conjunction with the *TEMPLATE_DIR* configuration options. See
     CUSTOMIZING TEMPLATES, below. Returns a true value if successful.
-
-INTERNAL METHODS
-    These methods are used internally. They are documented for developer
-    purposes only and may change in future releases. End users are
-    encouraged to avoid using them.
-
-  Create_Base_Directory
-
-    Overrides the parent. Same function, but sets the Base_Dir parameter to
-    an absolute file path. (Helpful for single-module builds)
 
   process_template
 

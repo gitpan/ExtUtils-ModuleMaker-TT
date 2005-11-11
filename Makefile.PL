@@ -10,19 +10,23 @@ WriteMakefile
                          ],
           'VERSION_FROM' => 'lib/ExtUtils/ModuleMaker/TT.pm',
           'PREREQ_PM' => {
-                           'Getopt::Long' => 0,
-                           'Pod::Usage' => '1',
-                           'File::Spec' => '0.87',
-                           'Data::Dumper' => '2.121',
-                           'Template' => '2.13',
-                           'Test::More' => '0.47',
-                           'ExtUtils::ModuleMaker' => '0.39',
-                           'File::Temp' => '0.16',
-                           'Config::General' => '2.19',
+                           'Pod::Usage' => '1.33',
+                           'File::Spec' => '3.11',
+                           'Probe::Perl' => '0.01',
+                           'ExtUtils::ModuleMaker' => '0.43',
+                           'Config::General' => '2.3',
                            'File::Path' => '1.06',
-                           'File::Spec::Functions' => '1.3',
-                           'File::Basename' => 0,
-                           'Cwd' => '2.12'
+                           'Module::Build' => '0.2703',
+                           'Getopt::Long' => '2.2',
+                           'File::pushd' => '0.24',
+                           'Data::Dumper' => '2.121',
+                           'Template' => '2.14',
+                           'Test::More' => '0.48',
+                           'File::Temp' => '0.16',
+                           'Path::Class' => '0.13',
+                           'IPC::Run3' => '0.031',
+                           'File::Basename' => '2.73',
+                           'Cwd' => '3.11'
                          }
         )
 ;

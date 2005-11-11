@@ -2,23 +2,22 @@
 # a Module::Build build system
 
 #use Test::More qw/no_plan/;
-use Test::More tests => 19;
-use File::Temp qw( tempdir );
-use Cwd;
+use Test::More tests => 16;
+use File::pushd;
 
-BEGIN { use_ok( 'ExtUtils::ModuleMaker::TT' ); }
-my $tempdir = tempdir( CLEANUP => 1 );
-ok ($tempdir, "making tempdir $tempdir");
-my $orig_dir = cwd();
-ok (chdir $tempdir, "chdir $tempdir");
+BEGIN { use_ok( 'ExtUtils::ModuleMaker' ); }
 
-###########################################################################
+{
+    my $dir = tempd();
 
 my $MOD;
 
-ok ($MOD  = ExtUtils::ModuleMaker::TT->new
+ok ($MOD  = ExtUtils::ModuleMaker->new
 			(
 				NAME		=> 'Sample::Module::Foo',
+                ALT_BUILD => 'ExtUtils::ModuleMaker::TT',
+                TEST_NAME_DERIVED_FROM_MODULE_NAME => 1,
+                INCLUDE_MANIFEST_SKIP => 1,
 				COMPACT		=> 1,
 				LICENSE		=> 'looselips',
 				BUILD_SYSTEM => 'Module::Build'
@@ -35,7 +34,7 @@ ok (chdir 'Sample-Module-Foo',
 
 #        MANIFEST.SKIP .cvsignore
 for (qw( Changes MANIFEST MANIFEST.SKIP Build.PL LICENSE
-		README lib lib/Sample/Module/Foo.pm t t/Sample_Module_Foo.t )) {
+		README lib lib/Sample/Module/Foo.pm t t/001_Sample_Module_Foo.t )) {
     ok (-e,
 		"$_ exists");
 }
@@ -50,6 +49,4 @@ close FILE;
 ok ($filetext =~ m/Loose lips sink ships/,
 	"correct LICENSE generated");
 
-###########################################################################
-
-ok (chdir $orig_dir, "chdir $orig_dir");
+}

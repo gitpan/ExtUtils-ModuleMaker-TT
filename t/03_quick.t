@@ -1,52 +1,40 @@
 # t/03_quick.t -- tests a quick build with minimal options
 
 #use Test::More qw/no_plan/;
-use Test::More tests => 19;
-use File::Temp qw( tempdir );
-use Cwd;
+use Test::More tests => 16;
+use File::pushd;
 
-BEGIN { use_ok( 'ExtUtils::ModuleMaker::TT' ); }
-my $tempdir = tempdir( CLEANUP => 1 );
-ok ($tempdir, "making tempdir $tempdir");
-my $orig_dir = cwd();
-ok (chdir $tempdir, "chdir $tempdir");
+BEGIN { use_ok( 'ExtUtils::ModuleMaker' ); }
 
-###########################################################################
+{
+    my $dir = tempd();
 
-my $MOD;
+    ok (my $MOD = ExtUtils::ModuleMaker->new (
+            NAME => 'Sample::Module',
+            ALT_BUILD => 'ExtUtils::ModuleMaker::TT',
+            TEST_NAME_DERIVED_FROM_MODULE_NAME => 1,
+            INCLUDE_MANIFEST_SKIP => 1,
+        ),
+        "create ExtUtils::ModuleMaker with ALT_BUILD");
+        
+    ok ($MOD->complete_build (),
+        "call \$MOD->complete_build");
 
-ok ($MOD  = ExtUtils::ModuleMaker::TT->new
-			(
-				NAME		=> 'Sample::Module',
-			),
-	"call ExtUtils::ModuleMaker::TT->new");
-	
-ok ($MOD->complete_build (),
-	"call \$MOD->complete_build");
+    ok (chdir 'Sample/Module',
+        "cd Sample/Module");
 
-###########################################################################
+    #        MANIFEST.SKIP .cvsignore
+    for (qw( Changes MANIFEST MANIFEST.SKIP Makefile.PL LICENSE
+            README lib lib/Sample/Module.pm t t/001_Sample_Module.t )) {
+        ok (-e,
+            "$_ exists");
+    }
 
-ok (chdir 'Sample/Module',
-	"cd Sample/Module");
+    ok (open (FILE, 'LICENSE'),
+        "reading 'LICENSE'");
+    my $filetext = do {local $/; <FILE>};
+    close FILE;
 
-#        MANIFEST.SKIP .cvsignore
-for (qw( Changes MANIFEST MANIFEST.SKIP Makefile.PL LICENSE
-		README lib lib/Sample/Module.pm t t/Sample_Module.t )) {
-    ok (-e,
-		"$_ exists");
+    ok ($filetext =~ m/Terms of Perl itself/,
+        "correct LICENSE generated");
 }
-
-###########################################################################
-
-ok (open (FILE, 'LICENSE'),
-	"reading 'LICENSE'");
-my $filetext = do {local $/; <FILE>};
-close FILE;
-
-ok ($filetext =~ m/Terms of Perl itself/,
-	"correct LICENSE generated");
-
-###########################################################################
-
-ok (chdir $orig_dir, "chdir $orig_dir");
-

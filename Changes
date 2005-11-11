@@ -1,5 +1,9 @@
 Revision history for Perl module ExtUtils::ModuleMaker::TT
 
+0.80 Fri Nov 11 11:08:59 EST 2005
+    - major internal changes for compatibility with EU::MM 0.43
+    - significatly expanded tests for makeperlmod program
+
 0.79 Thu Sep 15 06:47:26 EDT 2005
     - changed verify_values to validate_values for EU::MM 0.39 compatibility
 

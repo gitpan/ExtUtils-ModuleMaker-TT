@@ -12,6 +12,7 @@
 ^MakeMaker-\d
 ^Build$
 ^_build
+pod.*\.tmp$
 
 # Temp, old and emacs backup files.
 ~$
