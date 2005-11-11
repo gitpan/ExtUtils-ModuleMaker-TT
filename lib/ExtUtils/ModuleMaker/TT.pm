@@ -2,7 +2,7 @@ package ExtUtils::ModuleMaker::TT;
 use strict;
 local $^W = 1;
 use vars qw ( $VERSION );
-$VERSION = "0.80";
+$VERSION = "0.81";
 
 use base 'ExtUtils::ModuleMaker::StandardText';
 use ExtUtils::ModuleMaker::Utility qw( _get_dir_and_file );
@@ -38,6 +38,9 @@ support) and unwind some tightly-coupled functions. Documentation is
 likewise lagging slightly.  Please report any bugs 
 you may find.  I am working closely with the maintainer of 
 ExtUtils::ModuleMaker to improve the integration of these two modules.>
+
+I<Note: Template variables have changed in a way that may break existing
+templates.>
 
 This module extends L<ExtUtils::ModuleMaker> to use Template Toolkit 2 (TT2) to
 build skeleton files for a new module.  Templates may either be default
@@ -580,7 +583,7 @@ use Carp;
 BEGIN {
     use Exporter ();
     use vars qw ($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
-    $VERSION     = "0.79";
+    $VERSION     = "0.81";
     @ISA         = qw (Exporter);
     @EXPORT      = qw ();
     @EXPORT_OK   = qw ();
@@ -594,24 +597,24 @@ BEGIN {
 
 # Below is the stub of documentation for your module. You better edit it!
 
-[% pod_head1 %] NAME
+!=head1 NAME
 
 [%  NAME %] - Put abstract here 
 
-[% pod_head1 %] SYNOPSIS
+!=head1 SYNOPSIS
 
  use [%  NAME %];
  blah blah blah
 
-[% pod_head1 %] DESCRIPTION
+!=head1 DESCRIPTION
 
 Description...
 
-[% pod_head1 %] USAGE
+!=head1 USAGE
 
 Usage...
 
-[% pod_cut %]
+!=cut
 
 [% END %]
 [%- IF NEED_NEW_METHOD -%]
@@ -630,14 +633,14 @@ sub new {
 __END__
 [% IF NEED_POD %]
 [%- IF CHANGES_IN_POD -%]
-[% pod_head1 %] HISTORY
+!=head1 HISTORY
 [% END %]
-[% pod_head1 %] BUGS
+!=head1 BUGS
 
 Please report bugs using the CPAN Request Tracker at 
 http://rt.cpan.org/NoAuth/Bugs.html?Dist=[% DIST %]
 
-[% pod_head1 %] AUTHOR
+!=head1 AUTHOR
 
 [% AUTHOR.NAME %] [% IF AUTHOR.CPANID %]([% AUTHOR.CPANID %])[% END %]
 [%- IF AUTHOR.ORGANIZATION %]
@@ -649,17 +652,17 @@ http://rt.cpan.org/NoAuth/Bugs.html?Dist=[% DIST %]
 
 [% AUTHOR.WEBSITE %]
 
-[% pod_head1 %] COPYRIGHT
+!=head1 COPYRIGHT
 
 Copyright (c) [% COPYRIGHT_YEAR %] by [% AUTHOR.NAME %]
 
 [%  LicenseParts.COPYRIGHT %]
 
-[% pod_head1 %] SEE ALSO
+!=head1 SEE ALSO
 
 perl(1).
 
-[% pod_cut %]
+!=cut
 [%- END -%]
 EOF
 
@@ -671,13 +674,13 @@ $templates{'method'} = <<'EOF';
 #--------------------------------------------------------------------------#
 
 [% IF NEED_POD -%]
-[% pod_head2 %] [% method_name %]
+!=head2 [% method_name %]
 
  $rv = [% method_name %]();
 
 Description of [% method_name %]...
 
-[% pod_cut %]
+!=cut
 [%- END %]
 
 sub [% method_name %] {
@@ -712,6 +715,15 @@ plan skip_all => "Test::Pod 1.14 required for testing POD" if $@;
 all_pod_files_ok();
 END_OF_POD_TEST
 
+#--------------------------------------------------------------------------#
+# cleanup escaped pod in templates
+#--------------------------------------------------------------------------#
+
+for (values %templates) {
+    s/^!=([a-z])/=$1/gxms;
+}
+
+#--------------------------------------------------------------------------#
 
 1; #this line is important and will help the module return a true value
 __END__

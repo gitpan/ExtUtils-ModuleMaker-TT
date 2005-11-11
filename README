@@ -21,6 +21,9 @@ DESCRIPTION
     maintainer of ExtUtils::ModuleMaker to improve the integration of these
     two modules.*
 
+    *Note: Template variables have changed in a way that may break existing
+    templates.*
+
     This module extends ExtUtils::ModuleMaker to use Template Toolkit 2
     (TT2) to build skeleton files for a new module. Templates may either be
     default templates supplied within the module or user-customized

@@ -1,5 +1,8 @@
 Revision history for Perl module ExtUtils::ModuleMaker::TT
 
+0.81 Fri Nov 11 12:30:29 EST 2005
+    - fixed pod escapes in templates
+
 0.80 Fri Nov 11 11:08:59 EST 2005
     - major internal changes for compatibility with EU::MM 0.43
     - significatly expanded tests for makeperlmod program

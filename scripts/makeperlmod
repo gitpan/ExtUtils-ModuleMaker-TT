@@ -1,6 +1,8 @@
 #!/usr/bin/perl -w
+
+$VERSION = "0.81";
+
 use strict;
-use constant VERSION => '0.80';
 use Getopt::Long;
 use Pod::Usage;
 use Config::General;
@@ -118,7 +120,7 @@ SWITCH: for(1) {
     };
     
     $opt{version} && do {
-        print "$0 version " . VERSION . "\n";
+        print "$0 version $main::VERSION\n";
         print "Current config hash:\n" . Data::Dumper->Dump ( [{$config->getall}], [qw(config)]);
         last;
     }
@@ -169,6 +171,9 @@ support) and unwind some tightly-coupled functions. Documentation is
 likewise lagging slightly.  Please report any bugs 
 you may find.  I am working closely with the maintainer of 
 ExtUtils::ModuleMaker to improve the integration of these two modules.>
+
+I<Note: Template variables have changed in a way that may break existing
+templates.>
 
 =over
 
