@@ -1,46 +1,37 @@
 package ExtUtils::ModuleMaker::TT;
+
+$VERSION = "0.90";
+
 use strict;
 local $^W = 1;
-use vars qw ( $VERSION );
-$VERSION = "0.81";
 
-use base 'ExtUtils::ModuleMaker::StandardText';
 use ExtUtils::ModuleMaker::Utility qw( _get_dir_and_file );
-use Template;
-use Cwd;
-use File::Spec;
-use File::Path;
 use Path::Class;
+use Template;
 
 # predeclare
 our %templates;
 
 =head1 NAME
 
-ExtUtils::ModuleMaker::TT - Makes skeleton modules with Template Toolkit templates
+ExtUtils::ModuleMaker::TT - Makes skeleton modules with Template Toolkit
+templates
 
 =head1 SYNOPSIS
 
- use ExtUtils::ModuleMaker::TT;
- my $mmtt = ExtUtils::ModuleMaker::TT->new (
+ use ExtUtils::ModuleMaker;
+ my $mmtt = ExtUtils::ModuleMaker->new (
      NAME => 'My::New::Module',
-     TEMPLATE_DIR => '~/.perltemplates'
+     ALT_BUILD => 'ExtUtils::ModuleMaker::TT',
+     TEMPLATE_DIR => '~/.perltemplates',
  );
  $mmtt->complete_build();
 
 =head1 DESCRIPTION
 
-I<Note: ExtUtils::ModuleMaker has changed substantially in recent releases.
-This version of ExtUtils::ModuleMaker::TT has been updated to be minimally 
-compatible with these changes, but has not yet been completely overhauled to
-reflect new capabilities in ExtUtils::ModuleMaker (e.g. configuration file 
-support) and unwind some tightly-coupled functions. Documentation is 
-likewise lagging slightly.  Please report any bugs 
-you may find.  I am working closely with the maintainer of 
-ExtUtils::ModuleMaker to improve the integration of these two modules.>
-
-I<Note: Template variables have changed in a way that may break existing
-templates.>
+I<Note: ExtUtils::ModuleMaker has changed substantially in recent releases
+and ExtUtils::ModuleMaker::TT has similarly changed substantially to be
+compatible with these changes.  Please report any bugs you may find.>
 
 This module extends L<ExtUtils::ModuleMaker> to use Template Toolkit 2 (TT2) to
 build skeleton files for a new module.  Templates may either be default
@@ -54,35 +45,37 @@ Summary of Features/Enhancements:
 =item *
 
 Supports building full module skeletons with all the functionality of 
-L<ExtUtils::ModuleMaker>
+C<ExtUtils::ModuleMaker>
 
 =item *
 
-Supports adding a single .pm file (and corresponding .t file) to
-an existing module distribution tree.
+Supports adding a single .pm file (and corresponding .t file) to an existing
+module distribution tree
 
 =item *
 
-Supports creating skeleton text for a single method (generally
-to be called via a script from within your favorite editor)
+Supports creating skeleton text for a single method (generally to be called via
+a script from within your favorite editor)
 
 =item *
 
-Can create a template directory containing the default templates for subsequent
+Creates a template directory containing the default templates for subsequent
 user customization
 
 =item *
 
-Templates can access any parameter in the creating object (e.g. $mmtt, above).   
-This supports transparent, user-extensible template variables for use
-in custom templates
+Templates can access any parameter in the ExtUtils::ModuleMaker object (e.g.
+$mmtt, above).   This supports transparent, user-extensible template variables
+for use in custom templates
 
 =item * 
 
-Included script I<makeperlmod> provides a command line user interface for 
-module creation.  Supports reading default configuration settings from a file
-and will create a default config file if requested.  Can create full distributions,
-single modules, single methods, or default template directories
+Included command-line program I<makeperlmod> provides a command line user
+interface for module creation.  Supports reading default configuration settings
+from a file and will create a default config file if requested.  These config
+files extend and/or override an C<ExtUtils::ModuleMaker::Personal::Defaults>
+file.  The program can create full distributions, single modules, single
+methods, default configuration files or default template directories
 
 =back
 
@@ -92,60 +85,49 @@ Notable changes from ExtUtils::ModuleMaker:
 
 =item *
 
-I<complete_build> now takes arguments that are added to or overwrite 
-the current configuration
+Default templates are generally simpler, as users are expected to customize
+their own
 
 =item *
 
-Default templates are generally simpler and more compact
+.t files for single .pm files created I<after> the original build are named
+after their corresponding .pm file rather than being sequentially numbered.
 
 =item *
 
-Also creates a MANIFEST.SKIP file with reasonable default contents
-
-=item *
-
-Tests are named after their corresponding .pm files rather than being 
-sequentially numbered.  This change supports the "single .pm" mode more 
-consistently.  E.g., for "Sample::Module", a test file "Sample_Module.t" 
-is created
-
-=item *
-
-Supports both 'Module::Build and Proxy' and 'Module::Build and proxy 
-Makefile.PL' as I<BUILD_SYSTEM> synonyms to cover discrepancy between
-ExtUtils::ModuleMaker code and pod
+In the command-line program, I<COMPACT> style is set by default
 
 =back
 
 =head1 USAGE
 
-Generally, users should just use the included script, L<makeperlmod>.  For
-example, the following command will create a module distribution using default
-settings:
+ExtUtils::ModuleMaker::TT is designed to be used with the I<ALT_BUILD> 
+parameter of ExtUtils::ModuleMaker.  It replaces much of the functionality
+of L<ExtUtils::ModuleMaker::StandardText>.
+
+ use ExtUtils::ModuleMaker;
+ my $mmtt = ExtUtils::ModuleMaker->new (
+     NAME => 'My::New::Module',
+     ALT_BUILD => 'ExtUtils::ModuleMaker::TT',
+ );
+
+Generally, users should just use the included command-line program,
+L<makeperlmod>.  For example, the following command will create a module
+distribution using default settings:
 
     makeperlmod -n Sample::Module
 
-See the L<makeperlmod> man page for details on creating a custom configuration
-file (for setting author details and other ExtUtils::ModuleMaker options). 
-The L<CUSTOMIZING TEMPLATES> section below contains other examples.
+See the L<makeperlmod> manual page for details on creating a custom configuration
+file (for setting author details and other ExtUtils::ModuleMaker options) that
+will extend or override defaults set in an
+ExtUtils::ModuleMaker::Personal::Defaults file.  The L<CUSTOMIZING TEMPLATES>
+section below contains other examples.
 
-ExtUtils::ModuleMaker::TT can also be used programatically via the object
-methods defined below.  The L<makeperlmod> source provides a practical example
-of this approach.
+When specified as the ALT_BUILD, ExtUtils::ModuleMaker::TT provides several
+additional methods as described below.  The L<makeperlmod> source provides a
+practical example of such usage. 
 
 =head1 PUBLIC METHODS
-
-=head2 new
-
-    $mmtt = ExtUtils::ModuleMaker::TT->new ( %config );
-
-Uses the same configuration options as L<ExtUtils::ModuleMaker>.  Users may
-also define a I<TEMPLATE_DIR> parameter, in which case that directory will
-be used as the source for all templates.  See L<CUSTOMIZING TEMPLATES>, below.
-Returns a new ExtUtils::ModuleMaker::TT object.
-
-=cut
 
 =head2 build_single_pm
 
@@ -167,8 +149,10 @@ or
 This method must be able to locate the base directory of the distribution in
 order to correctly place the .pm and .t files.  A I<complete_build()> call sets
 the I<Base_Dir> parameter appropriately as it creates the distribution
-directory.  When called on a standalone basis (without a I<complete_build()>
-call), the caller must be in a working directory within the distribution tree.
+directory.  When called on a standalone basis (without a prior
+I<complete_build()> call), the caller must be in a directory within the
+distribution tree.  
+
 When I<Base_Dir> is not set, this method will look in the current directory for
 both a 'MANIFEST' file and a 'lib' directory.  If neither are found, it will
 scan upwards in the directory tree for an appropriate directory.  Requiring
@@ -213,7 +197,7 @@ sub build_single_pm {
     }    
 
     my ( $dir, $file ) = _get_dir_and_file( $module_object );
-    $self->create_directory( File::Spec->catdir($self->{Base_Dir}, $dir ));
+    $self->create_directory( dir($self->{Base_Dir}, $dir ));
 
     $module_object->{new_method} = $self->build_single_method('new');
     # hack to remove subroutine bit    -- a real new sub is in module.pm template
@@ -222,12 +206,12 @@ sub build_single_pm {
      $module_object->{new_method} =~ s/\$rv = /\$rv = $module_object->{NAME}->/s; 
      
     $self->print_file( 
-        File::Spec->catfile( $dir, $file ), 
+        file( $dir, $file ), 
         $self->text_pm_file( $module_object ) 
     );
 
     (my $clean_name = $module_object->{NAME} ) =~ s/::/_/g;
-    my $testfile = File::Spec->catfile( "t", $clean_name . ".t" );
+    my $testfile = file( "t", $clean_name . ".t" );
     $self->print_file(
         $testfile,
         $self->text_test( $clean_name, $module_object )
@@ -241,7 +225,7 @@ sub build_single_pm {
 
     $mmtt->build_single_method( $method_name );
 
-Returns a string with a skeleton method header for the given I<$method_name>.
+Returns a string with a skeleton subroutine for the given I<$method_name>.
 Used internally, but made available for use in scripts to be called from
 your favorite editor.
 
@@ -318,12 +302,12 @@ sub text_MANIFEST_SKIP {
 
 sub text_pod_coverage_test {
     my $self = shift;
-    return $self->process_template( 'pod_coverage_test.t', $self );
+    return $self->process_template( 'pod_coverage.t', $self );
 }
 
 sub text_pod_test {
     my $self = shift;
-    return $self->process_template( 'pod_test.t', $self );
+    return $self->process_template( 'pod.t', $self );
 }
 
 sub text_pm_file {
@@ -351,9 +335,9 @@ Returns a true value if successful.
 
 sub create_template_directory {
     my ($class, $dir) = @_;
-    mkpath $dir;
+    dir($dir)->mkpath;
     for my $template ( keys %templates ) {
-        my $target = File::Spec->catdir($dir, $template);
+        my $target = dir($dir, $template);
         open (FILE, ">", $target) or croak ("Could not write '$target', $!");
         print FILE ( $templates{$template} );
         close FILE;
@@ -365,11 +349,12 @@ sub create_template_directory {
 
     $mmtt->process_template( $template, \%data, $outputfile );
 
-Calls TT to fill in the template and write it to the output file.
-Requires a template name, a hash reference of parameters, and an outputfile
-(relative to the base distribution directory).  If the I<TEMPLATE_DIR>
-parameter is set, templates will be taken from there, otherwise the
-default templates are used.  Returns a true value if successful.
+Calls TT2 to fill in the given template and write it to the output file.
+Requires a template name, a hash reference of parameters (typically just the
+C<$mmtt> object itself), and an outputfile (relative to the base distribution
+directory).  If the I<TEMPLATE_DIR> parameter is set, templates will be taken
+from there, otherwise the default templates are used.  Returns a true value if
+successful.
 
 =cut
 
@@ -388,29 +373,6 @@ sub process_template {
         ]);
     return $output_text;
 }
-
-
-=head2 default_templates
-
-    $mmtt->default_templates();
- 
-Generates the default templates from <<HERE statements in the code.  Returns a
-hash containing the default templates
-
-Templates included are:
-
-    * README
-    * Changes
-    * Todo
-    * Build.PL
-    * Makefile.PL
-    * Proxy_Makefile.PL
-    * MANIFEST.SKIP
-    * test.t
-    * module.pm
-
-=cut
-
 
 #-------------------------------------------------------------------------#
     
@@ -463,7 +425,7 @@ use Module::Build;
 
 Module::Build->new( 
     module_name         => '[%  NAME %]',
-    dist_author         => '[%  AUTHOR.NAME %] <[%  AUTHOR.EMAIL %]>',
+    dist_author         => '[%  AUTHOR %] <[% EMAIL %]>',
 [%- IF LICENSE.match('perl|gpl|artistic') %]
     license             => '[%  LICENSE %]',
 [%- END %]
@@ -487,7 +449,7 @@ use ExtUtils::MakeMaker;
 WriteMakefile(
     NAME         => '[%  NAME %]',
     VERSION_FROM => '[%  FILE %]', # finds $VERSION
-    AUTHOR       => '[%  AUTHOR.NAME %] ([%  AUTHOR.EMAIL %])',
+    AUTHOR       => '[%  AUTHOR %] ([%  EMAIL %])',
     ABSTRACT     => '[% ABSTRACT %]',
     PREREQ_PM    => {
                      'Test::Simple' => 0.44,
@@ -583,7 +545,7 @@ use Carp;
 BEGIN {
     use Exporter ();
     use vars qw ($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
-    $VERSION     = "0.81";
+    $VERSION     = "0.10";
     @ISA         = qw (Exporter);
     @EXPORT      = qw ();
     @EXPORT_OK   = qw ();
@@ -637,30 +599,25 @@ __END__
 [% END %]
 !=head1 BUGS
 
-Please report bugs using the CPAN Request Tracker at 
-http://rt.cpan.org/NoAuth/Bugs.html?Dist=[% DIST %]
+Please report bugs using the CPAN Request Tracker at L<http://rt.cpan.org/>
 
 !=head1 AUTHOR
 
-[% AUTHOR.NAME %] [% IF AUTHOR.CPANID %]([% AUTHOR.CPANID %])[% END %]
-[%- IF AUTHOR.ORGANIZATION %]
+[% AUTHOR %] [% IF CPANID %]([% CPANID %])[% END %]
+[%- IF ORGANIZATION %]
 
-[% AUTHOR.ORGANIZATION %]
+[% ORGANIZATION %]
 [%- END %]
 
-[% AUTHOR.EMAIL %]
+[% EMAIL %]
 
-[% AUTHOR.WEBSITE %]
+[% WEBSITE %]
 
 !=head1 COPYRIGHT
 
-Copyright (c) [% COPYRIGHT_YEAR %] by [% AUTHOR.NAME %]
+Copyright (c) [% COPYRIGHT_YEAR %] by [% AUTHOR %]
 
 [%  LicenseParts.COPYRIGHT %]
-
-!=head1 SEE ALSO
-
-perl(1).
 
 !=cut
 [%- END -%]
@@ -698,15 +655,21 @@ $templates{'pod_coverage.t'} = <<'END_OF_POD_COVERAGE_TEST';
 #!perl -T
 
 use Test::More;
-eval "use Test::Pod::Coverage 1.04";
-plan skip_all => "Test::Pod::Coverage 1.04 required for testing POD coverage"
+
+eval "use Test::Pod::Coverage 1.06";
+plan skip_all => "Test::Pod::Coverage 1.06 required for testing POD coverage"
     if $@;
+
+eval "use Pod::Coverage 0.17";
+plan skip_all => "Pod::Coverage 0.17 required for testing POD coverage"
+    if $@;
+
 all_pod_coverage_ok();
 END_OF_POD_COVERAGE_TEST
 
 #----------------------------------------------------------------------#
  
-$templates{'pod_coverage.t'} = <<'END_OF_POD_TEST';
+$templates{'pod.t'} = <<'END_OF_POD_TEST';
 #!perl -T
 
 use Test::More;
@@ -736,22 +699,51 @@ Use the L<makeperlmod> script to create a directory containing a copy of the
 default templates.  Alternatively, use the L<create_template_directory> method
 directly.  Edit these templates to suit personal taste or style guidelines. 
 Be sure to specify a TEMPLATE_DIR configuration option when making
-modules.  
+modules or add it to either the ExtUtils::ModuleMaker::Personal::Defaults
+file or to a C<makeperlmod> config file.  
+
+=head2 Changes from earlier versions
+
+ExtUtils::ModuleMaker now stores author information in the main object rather
+than in a separate hash datastructure.  This will break old templates.
+
+ # Old
+ { 
+   AUTHOR => { NAME => "John Doe", EMAIL => "john@doe.org" } 
+ }
+ 
+ # New
+ {
+   AUTHOR => "John Doe",
+   EMAIL  => "john@doe.org",
+ }
 
 =head2 Customizing with makeperlmod
 
 This can all be done quite easily with L<makeperlmod>.  Begin with:
 
-    makeperlmod -d ~/.makeperlmod.config
+    makeperlmod -d 
+
+This will create a default configuration file and print its location.  See the
+makeperlmod manual for details on creating and using named configuration
+files.
+
+Next, create a template directory.  Choose a location that is appropriate
+for your operating system.  E.g., for unix:
+
     makeperlmod -t ~/.makeperlmod.templates
 
-Edit .makeperlmod.config and add C<TEMPLATE_DIR ~/.makeperlmod.templates>.  Make
-any other desired edits to AUTHOR, COMPACT, etc.  (COMPACT is recommended.)
+Edit the templates as needed. Templates are written with the Template
+Toolkit to allow for easy user customization of the contents and layout. See
+the L<Template> module for the full syntax or just examine the default
+templates for quick changes.
 
-Edit the resulting templates as needed. Templates are written with
-the Template Toolkit to allow for easy user customization of the contents and
-layout. See the L<Template> module for the full syntax or just examine the
-default templates for quick changes.
+Edit the default configuration file and add a I<TEMPLATE_DIR> parameter.  Use
+whatever directory you chose to hold the templates.  Make any other desired
+edits to AUTHOR, etc.  For example:
+
+  TEMPLATE_DIR ~/.makeperlmod.templates
+  AUTHOR John Q. Public
 
 Presto!  Customization is done.  Now start making modules with
 
@@ -759,59 +751,87 @@ Presto!  Customization is done.  Now start making modules with
 
 =head2 Creating custom template variables (use with caution)
 
-When templates are processed, the entire ExtUtils::ModuleMaker::TT object is
-passed to the Template Toolkit.  Thus any class data is available for use in
-templates.  Users may add custom configuration options ( to I<new> or in
-a ~/.makeperlmod.config file and use these in custom templates.  Be careful not
-to overwrite any class data needed elsewhere in the module.
+When templates are processed, the entire ExtUtils::ModuleMaker object is passed
+to the Template Toolkit.  Thus any class data is available for use in
+templates.  Users may add custom configuration options ( to I<new>, to the
+ExtUtils::ModuleMaker::Personal::Defaults file, or to a makeperlmod config
+file) and use these in custom templates.  Be careful not to overwrite any class
+data needed elsewhere in the module.
 
+=head2 Default templates
+
+Templates included are:
+
+    * README
+    * Changes
+    * Todo
+    * Build.PL
+    * Makefile.PL
+    * Proxy_Makefile.PL
+    * MANIFEST.SKIP
+    * test.t
+    * module.pm
+    * method
+    * pod.t
+    * pod_coverage.t
+    
 =head1 INSTALLATION
 
  perl Build.PL
- Build
- Build test
- Build install
+ perl Build
+ perl Build test
+ perl Build install
 
 =head1 REQUIRES
 
- ExtUtils::ModuleMaker
- Template
- Cwd
- File::Path
- Getopt::Long
- Pod::Usage
- File::Spec::Functions
- File::Basename
- Config::General
- Data::Dumper
+Required for operation
+
+    Config::General
+    Data::Dumper
+    ExtUtils::ModuleMaker
+    Getopt::Long
+    Path::Class
+    Pod::Usage
+    Template
+
+Required for testing
     
+    File::Copy
+    File::pushd
+    IPC::Run3
+    Probe::Perl
+    Test::More
+
+Template Toolkit PPM for ActiveState is available from the University of
+Winnipeg PPM repository:
+
+L<http://theoryx5.uwinnipeg.ca/ppms/>
+
 =head1 BUGS
 
-None reported yet, though there must be some.  E-mail bug reports to the author.
+Please report bugs using the CPAN Request Tracker at 
+L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=ExtUtils-ModuleMaker-TT>
 
-=head1 SUPPORT
-
-E-mail the author
+When submitting a bug or request, please include a test-file or a patch to an
+existing test-file that illustrates the bug or desired feature.
 
 =head1 AUTHOR
 
- David A. Golden
- david@dagolden.com
- http://dagolden.com/
-    
+David A Golden (DAGOLDEN)
+
+dagolden@cpan.org
+
+L<http://dagolden.com/>
+
 =head1 COPYRIGHT
 
-Copyright (c) 2004 by David A. Golden
+Copyright (c) 2004-2005 by David A Golden
 
 This program is free software; you can redistribute
 it and/or modify it under the same terms as Perl itself.
 
 The full text of the license can be found in the
 LICENSE file included with this module.
-
-=head1 SEE ALSO
-
-perl, ExtUtils::ModuleMaker, Template
 
 =cut
 

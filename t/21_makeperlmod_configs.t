@@ -1,8 +1,10 @@
 use strict;
 use warnings;
 
-use Test::More tests => 15; 
+#use Test::More 'no_plan'; 
+use Test::More tests => 32; 
 use t::CLI;
+use File::Copy;
 use File::pushd;
 use Path::Class;
 
@@ -36,7 +38,7 @@ END { _restore_pretesting_status( $pretest_status ) }
 #--------------------------------------------------------------------------#
 
 $cli->dies_ok(qw( -c doesntexist -s foo));
-$cli->stderr_like(qr/doesntexist.+does not exist/, "config not found error");
+$cli->stderr_like(qr/doesntexist/, "config not found error message");
 
 #--------------------------------------------------------------------------#
 # set author name and templates via config
@@ -66,3 +68,51 @@ $cli->stderr_like(qr/doesntexist.+does not exist/, "config not found error");
     
 }
     
+#--------------------------------------------------------------------------#
+# create a config file under a pseudonym
+#--------------------------------------------------------------------------#
+
+{
+    my $dir = tempd;
+    my $temp_program = "mpm_$$";
+    ok( copy( $cli->program, $temp_program ),
+        "Copied 'makeperlmod' to '$temp_program' for default config testing"
+    ) or die $!;
+    my $cli_copy = t::CLI->new( $temp_program );
+    
+    my $config_file;
+    for my $config_name ( undef, qw( default foo ) ) {
+        # create the default file
+        $cli_copy->runs_ok('-d', $config_name ? $config_name : () );
+        my $config_location = $cli_copy->stdout;
+        chomp $config_location;
+
+        # locate it the long way
+        $cli_copy->runs_ok('-l', $config_name ? $config_name : () );
+        $config_file = $cli_copy->stdout;
+        chomp $config_file;
+        $config_file = file($config_file);
+
+        # confirm it matches
+        is( $config_file, $config_location,
+            "Config file reported by '-d' matches '-l'"
+        );
+            
+        # confirm it exists
+        my $clean_name = $config_name ? $config_name : 'default';
+        ok( -e $config_file, "Found new config '$clean_name'" );
+
+        # confirm that it works
+        my @args = (
+            ($config_name ? ( '-c', $config_name ) : ()),
+            '-s', 
+            'wibble'
+        );
+        $cli_copy->runs_ok(@args);
+    }
+    
+    $config_file->dir()->rmtree;
+    ok( ! -e $config_file->dir, 
+       "Config directory for '$temp_program' cleaned up"
+    );
+}

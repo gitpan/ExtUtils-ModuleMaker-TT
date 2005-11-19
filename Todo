@@ -1,13 +1,5 @@
 TODO list for Perl module ExtUtils::ModuleMaker::TT
 
-Documentation
-
-    - "Supports both [forms of Module::Build]" is fixed in latest EU::MM
-
-    - MANIFEST.SKIP now part of EU::MM
-
-    - return value of complete_build not in POD
-    
 Functionality
 
 	- warnings before overwriting files or a "force=>1" option
@@ -15,30 +7,8 @@ Functionality
 Testing
 
 	- Incomplete code coverage (from Devel::Cover)
-
-		* arguments to complete_build() (though makeperlmod uses this
-		  successfully)
-
-		* test without CHANGES_IN_POD
-
-		* test 'Module::Build and proxy Makefile.PL'
-
-		* build_single_pm from a name, not just a hashref (again,
-		  makeperlmod does this successfully)
-
-		* test -e MANIFEST true and -d lib false
-
-		* test "can't find base dir" outcome in single_pm
-
-		* test custom templates
-
-		* test can't write to template directory
-
-	- Test how subroutine print looks without NEED_NEW
 	
 	- Test all variations of config variables in templates
-
-	- Test makeperlmod
 
 	- Test critical failure handling
 	
@@ -46,7 +16,3 @@ Testing
 
 		* not in a writeable directory
 	
-Portability
-
-	- Use more portable routines for file/path manipulation (but does
-	  ExtUtils::ModuleMaker do this?)

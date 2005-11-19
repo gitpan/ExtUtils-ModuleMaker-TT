@@ -1,7 +1,7 @@
 # t/05_template.t -- tests abilty to create template directory
 
 #use Test::More qw/no_plan/;
-use Test::More tests => 15;
+use Test::More tests => 16;
 use File::pushd;
 
 BEGIN { use_ok( 'ExtUtils::ModuleMaker::TT' ); }

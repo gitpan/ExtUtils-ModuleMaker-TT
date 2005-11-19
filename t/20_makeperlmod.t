@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 55;
+use Test::More tests => 56;
 use t::CLI;
 use File::pushd;
 use Path::Class;

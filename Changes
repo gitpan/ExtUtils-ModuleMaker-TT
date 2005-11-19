@@ -1,5 +1,20 @@
 Revision history for Perl module ExtUtils::ModuleMaker::TT
 
+0.90 Sat Nov 19 10:50:36 EST 2005
+    - major changes in config file handling; now using Config::Find
+      for more OS-friendly locations; config files are separate from
+      and extend/override ExtUtils::ModuleMaker::Personal::Defaults
+    - massive expansion and cleanup of makeperlmod testing
+    - eliminating unnecessary dependencies from code and prereqs
+      [thanks to Jim Keenan for spotting several issues]
+    - fixed pod_coverage.t template from overwriting pod.t template
+    - expanded pod_coverage.t template to include a test for Pod::Coverage
+    - fixed default templates to handle author info the new way (without
+      nested data structures)
+    - several minor default template cleanups
+    - expanded and revised documentation to finally reflect changes made
+      for EU::MM compatibility
+
 0.81 Fri Nov 11 12:30:29 EST 2005
     - fixed pod escapes in templates
 

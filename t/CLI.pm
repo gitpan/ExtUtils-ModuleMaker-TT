@@ -5,15 +5,17 @@ use warnings;
 use Test::Builder;
 use Probe::Perl;
 use IPC::Run3;
-use File::Basename qw(fileparse);
-use Cwd;
 use Path::Class;
 
 my $Test = Test::Builder->new;
 my $pp = Probe::Perl->new;
 my $perl = file($pp->find_perl_interpreter)->absolute;
-my $cwd = cwd;
-
+my $cwd = dir()->absolute;
+my $coverdb = dir($cwd,"cover_db");
+my $cover = index( ($ENV{HARNESS_PERL_SWITCHES} || ''), '-MDevel::Cover' ) < 0
+          ? ''
+          : "-MDevel::Cover=-db,$coverdb"
+          ;
 #--------------------------------------------------------------------------#
 # Main API
 #--------------------------------------------------------------------------#
@@ -35,7 +37,8 @@ sub run {
 
     my @cmd = (
         $perl, 
-        "-Mblib=$cwd", 
+        "-Mblib=$cwd", # must hard code this in case curdir changed
+        ( $cover ? $cover : () ),
         $self->program(),
         @{ $self->default_args() },
         @args,
@@ -55,11 +58,12 @@ sub run {
 #--------------------------------------------------------------------------#
 
 sub program {
-    my ($self, $p) = @_;
-    if (defined $p) {
+    my ($self, $filename) = @_;
+    if (defined $filename) {
+        my $p = file($filename);
         die "Can't find $p" if ! -e $p;
-        $self->{program} = File::Spec->rel2abs($p);
-        $self->basename(fileparse($p));
+        $self->{program} = $p->absolute;
+        $self->basename($p->basename);
     }
     return $self->{program};
 }
