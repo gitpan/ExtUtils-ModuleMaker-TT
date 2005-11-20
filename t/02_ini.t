@@ -2,11 +2,9 @@
 
 # t/02_ini.t - check module loading 
 
-use Test::More tests => 3;
+use Test::More tests => 1;
 
 BEGIN { use_ok( 'ExtUtils::ModuleMaker::TT' ); }
-BEGIN { use_ok( 'ExtUtils::ModuleMaker::Licenses::Standard' ); }
-BEGIN { use_ok( 'ExtUtils::ModuleMaker::Licenses::Local' ); }
 
 ###########################################################################
 

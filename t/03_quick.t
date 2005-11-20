@@ -1,10 +1,26 @@
 # t/03_quick.t -- tests a quick build with minimal options
 
 #use Test::More qw/no_plan/;
-use Test::More tests => 16;
+use Test::More tests => 25;
 use File::pushd;
 
 BEGIN { use_ok( 'ExtUtils::ModuleMaker' ); }
+
+#--------------------------------------------------------------------------#
+# Mask any user defaults for the duration of the program
+#--------------------------------------------------------------------------#
+
+BEGIN { 
+    use_ok( "ExtUtils::ModuleMaker::Auxiliary",
+        qw( _save_pretesting_status _restore_pretesting_status )
+    );
+}
+
+# these add 8 tests
+my $pretest_status = _save_pretesting_status();
+END { _restore_pretesting_status( $pretest_status ) }
+
+#--------------------------------------------------------------------------#
 
 {
     my $dir = tempd();

@@ -1,5 +1,11 @@
 Revision history for Perl module ExtUtils::ModuleMaker::TT
 
+0.91 Sun Nov 20 07:32:43 EST 2005
+    - fixed broken tests when an ExtUtils::ModuleMaker::Personal::Defaults
+      file is present and conflicts with test expectations; defaults
+      masked in all tests using ExtUtils::ModuleMaker::Auxiliary
+      [caught by Jim Keenan]
+      
 0.90 Sat Nov 19 10:50:36 EST 2005
     - major changes in config file handling; now using Config::Find
       for more OS-friendly locations; config files are separate from

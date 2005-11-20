@@ -1,6 +1,6 @@
 package ExtUtils::ModuleMaker::TT;
 
-$VERSION = "0.90";
+$VERSION = "0.91";
 
 use strict;
 local $^W = 1;

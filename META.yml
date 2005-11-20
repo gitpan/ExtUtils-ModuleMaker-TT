@@ -1,6 +1,6 @@
 ---
 name: ExtUtils-ModuleMaker-TT
-version: 0.90
+version: 0.91
 author:
   - David A Golden <dagolden@cpan.org>
 abstract: |-
@@ -26,5 +26,5 @@ requires:
 provides:
   ExtUtils::ModuleMaker::TT:
     file: lib/ExtUtils/ModuleMaker/TT.pm
-    version: 0.90
+    version: 0.91
 generated_by: Module::Build version 0.2703
