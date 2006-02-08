@@ -47,11 +47,11 @@ END { _restore_pretesting_status( $pretest_status ) }
 # With no arguments or in help mode, give a usage message
 #--------------------------------------------------------------------------#
 
-$cli->exits_with(1);
+$cli->dies_ok();
 $cli->stdout_like(qr/usage/i, "generated a usage message");
 
 for (qw( -? -h --help) ) {
-    $cli->exits_with(1, $_);
+    $cli->dies_ok($_);
     $cli->stdout_like(qr/usage/i, "generated a usage message");
 }
 
@@ -76,7 +76,7 @@ for (qw( -V --version ) ) {
     my $first_pass;
 
     for (qw( -t --templates )) {
-        my $dir = tempd;
+        my $dir = dir( my $td = tempd );
         
         $cli->runs_ok($_,"templates");
 
@@ -116,7 +116,7 @@ for ( qw( -s --subroutine ) ) {
 #--------------------------------------------------------------------------#
 
 for ( qw( -n --newdist) ) {
-    my $dir = tempd;
+    my $dir = dir( my $td = tempd );
     
     $cli->runs_ok($_, 'Foo::Bar');
 
@@ -139,7 +139,7 @@ for ( qw( -n --newdist) ) {
 #--------------------------------------------------------------------------#
 
 {
-    my $dir = tempd;
+    my $dir = dir( my $td = tempd );
     
     $cli->runs_ok(qw(-n Foo::Bar --extra Foo::Baz -e Foo::Bar::Bam));
 
@@ -169,7 +169,7 @@ for ( qw( -n --newdist) ) {
 #--------------------------------------------------------------------------#
 
 {
-    my $dir = tempd;
+    my $dir = dir( my $td = tempd );
     
     $cli->runs_ok(qw(-n Foo::Bar));
 

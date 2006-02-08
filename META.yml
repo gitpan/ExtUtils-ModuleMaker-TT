@@ -1,6 +1,6 @@
 ---
 name: ExtUtils-ModuleMaker-TT
-version: 0.91
+version: 0.92
 author:
   - David A Golden <dagolden@cpan.org>
 abstract: |-
@@ -15,16 +15,15 @@ requires:
   Data::Dumper: 0
   ExtUtils::ModuleMaker: 0.43
   File::Copy: 0
-  File::pushd: 0.24
+  File::pushd: 0.32
   Getopt::Long: 0
   IPC::Run3: 0.033
-  Path::Class: 0.13
-  Pod::Usage: 0
+  Path::Class: 0.15
   Probe::Perl: 0.01
   Template: 2.14
-  Test::More: 0.48
+  Test::More: 0.45
 provides:
   ExtUtils::ModuleMaker::TT:
     file: lib/ExtUtils/ModuleMaker/TT.pm
-    version: 0.91
+    version: 0.92
 generated_by: Module::Build version 0.2703

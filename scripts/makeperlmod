@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-$VERSION = "0.91";
+$VERSION = "0.92";
 
 use strict;
 use Config::Find;
@@ -9,7 +9,36 @@ use Data::Dumper;
 use ExtUtils::ModuleMaker;
 use Getopt::Long;
 use Path::Class;
-use Pod::Usage;
+
+#--------------------------------------------------------------------------#
+# usage
+#--------------------------------------------------------------------------#
+
+sub print_usage {
+    my $verbosity = shift;
+    
+    print << 'BASIC';
+    Usage: 
+    makeperlmod [ -c config_file ] mode_option [argument] [-e extra_info ]
+BASIC
+    return if $verbosity < 2;
+
+    print << 'LONG';
+
+    mode_options (one is required and only one may be used)
+
+       -d [CONFIG] or --defaults [CONFIG]
+       -l [CONFIG] or --locate_config [CONFIG]
+       -t DIRECTORY or --templates DIRECTORY
+       -n MODULE::NAME or --newdist MODULE::NAME
+       -m MODULE::NAME or --module MODULE::NAME
+       -s METHOD_NAME or --subroutine METHOD_NAME
+       -V or --version
+       -h or -? or --help
+LONG
+
+    return;
+}
 
 #--------------------------------------------------------------------------#
 # find_config
@@ -69,14 +98,18 @@ my @opt_def = ('help|h|?',
 
 my %opt = ('help' => 0);
 
-GetOptions(\%opt, @opt_def) or pod2usage(2);
-pod2usage(1) if $opt{help};
+GetOptions(\%opt, @opt_def) or ( print_usage(2) and exit(1) );
+if ( $opt{help} ) {
+    print_usage(2);
+    exit(1);
+}
 
 my $cmd_opt_count = 
     grep(/defaults|templates|newdist|module|subroutine|version|locate_config/, 
         keys %opt); 
 unless ( $cmd_opt_count == 1  ) {
-    pod2usage(1);
+    print_usage(1);
+    exit(1);
 }
 
 # Find config file if specified or use the default

@@ -6,6 +6,7 @@ use Test::Builder;
 use Probe::Perl;
 use IPC::Run3;
 use Path::Class;
+#use POSIX qw( WEXITSTATUS );
 
 my $Test = Test::Builder->new;
 my $pp = Probe::Perl->new;
@@ -28,7 +29,7 @@ sub new {
     return $self;
 }
 
-# returns success or failure; exit_code is undef on failure; actual error
+# returns success or failure; exit_code is opposite (0 is good); actual error
 # message is in @$
 sub run {
     my ($self, @args) = @_;
@@ -44,9 +45,11 @@ sub run {
         @args,
     );
                 
-    eval {run3 \@cmd, \$stdin, \$stdout, \$stderr};
+    eval {
+        run3 \@cmd, \$stdin, \$stdout, \$stderr;
+        $self->exit_code( $? >> 8 || 0 );
+    };
     my $result = $@ eq q{} ? 1 : 0;
-    $self->exit_code($@ eq q{} ? $? >> 8 : undef);
     $self->stdout($stdout);
     $self->stderr($stderr);
     $@ .= "(running '@cmd')";

@@ -1,6 +1,6 @@
 package ExtUtils::ModuleMaker::TT;
 
-$VERSION = "0.91";
+$VERSION = "0.92";
 
 use strict;
 local $^W = 1;
@@ -545,7 +545,7 @@ use Carp;
 BEGIN {
     use Exporter ();
     use vars qw ($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
-    $VERSION     = "0.10";
+    $VERSION     = "0.92";
     @ISA         = qw (Exporter);
     @EXPORT      = qw ();
     @EXPORT_OK   = qw ();

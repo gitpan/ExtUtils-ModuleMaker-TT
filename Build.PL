@@ -5,7 +5,7 @@ Module::Build->new
     ( module_name     => 'ExtUtils::ModuleMaker::TT',
 	  dist_author     => 'David A Golden <dagolden@cpan.org>',
       create_makefile_pl => "traditional",
-      create_readme   => 1,
+      create_readme   => 0,
       license         => 'perl',
 	  requires        => { 
           Config::Find => 0.22,
@@ -13,14 +13,13 @@ Module::Build->new
           Data::Dumper => 0,
           ExtUtils::ModuleMaker => 0.43,
           File::Copy => 0,
-          File::pushd => 0.24,
+          File::pushd => 0.32,
           Getopt::Long => 0,
           IPC::Run3 => 0.033,
-          Path::Class => 0.13,
-          Pod::Usage => 0,
+          Path::Class => 0.15,
           Probe::Perl => 0.01,
           Template => 2.14,
-          Test::More => 0.48, # thread safe
+          Test::More => 0.45, # thread safe
       },
 	  scripts    => { 'scripts/makeperlmod' => 1 },
     )->create_build_script;

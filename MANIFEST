@@ -15,6 +15,8 @@ t/05_template.t
 t/06_singlepm.t
 t/20_makeperlmod.t
 t/21_makeperlmod_configs.t
+t/98_pod.t
+t/99_pod_coverage.t
 t/CLI.pm
 t/config/empty_default
 t/config/sample

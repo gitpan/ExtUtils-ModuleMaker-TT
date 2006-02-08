@@ -12,16 +12,15 @@ WriteMakefile
           'PREREQ_PM' => {
                            'Getopt::Long' => 0,
                            'File::Copy' => 0,
-                           'Pod::Usage' => 0,
-                           'File::pushd' => '0.24',
+                           'File::pushd' => '0.32',
                            'Data::Dumper' => 0,
                            'Config::Find' => '0.22',
                            'Template' => '2.14',
-                           'Test::More' => '0.48',
+                           'Test::More' => '0.45',
                            'Probe::Perl' => '0.01',
                            'ExtUtils::ModuleMaker' => '0.43',
                            'Config::General' => '2.29',
-                           'Path::Class' => '0.13',
+                           'Path::Class' => '0.15',
                            'IPC::Run3' => '0.033'
                          }
         )
