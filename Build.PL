@@ -11,7 +11,7 @@ Module::Build->new
           Config::Find => 0.22,
           Config::General => 2.29,
           Data::Dumper => 0,
-          ExtUtils::ModuleMaker => 0.43,
+          ExtUtils::ModuleMaker => 0.46,
           File::Copy => 0,
           File::pushd => 0.32,
           Getopt::Long => 0,

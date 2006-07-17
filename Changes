@@ -1,5 +1,9 @@
 Revision history for Perl module ExtUtils::ModuleMaker::TT
 
+0.93 Sun Jul 16 09:22:55 EDT 2006
+    - removed dependency on ExtUtils::ModuleMaker::Utility, as that 
+      file went away in EU::MM 0.46
+
 0.92 Wed Feb  8 07:24:52 EST 2006
     - eliminated Pod::Usage dependency that was causing test failures
     - fixed broken makeperlmod tests for exit status

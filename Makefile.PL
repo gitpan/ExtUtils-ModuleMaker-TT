@@ -18,7 +18,7 @@ WriteMakefile
                            'Template' => '2.14',
                            'Test::More' => '0.45',
                            'Probe::Perl' => '0.01',
-                           'ExtUtils::ModuleMaker' => '0.43',
+                           'ExtUtils::ModuleMaker' => '0.46',
                            'Config::General' => '2.29',
                            'Path::Class' => '0.15',
                            'IPC::Run3' => '0.033'

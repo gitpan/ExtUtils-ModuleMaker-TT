@@ -1,16 +1,23 @@
 package ExtUtils::ModuleMaker::TT;
 
-$VERSION = "0.92";
+$VERSION = "0.93";
 
 use strict;
 local $^W = 1;
 
-use ExtUtils::ModuleMaker::Utility qw( _get_dir_and_file );
 use Path::Class;
 use Template;
 
 # predeclare
 our %templates;
+
+sub _get_dir_and_file {
+    my $module = shift;
+    my @layers      = split( /::/, $module->{NAME} );
+    my $file        = pop(@layers) . '.pm';
+    my $dir         = join( '/', 'lib', @layers );
+    return ($dir, $file);
+}
 
 =head1 NAME
 
