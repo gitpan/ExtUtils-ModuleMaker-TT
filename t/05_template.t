@@ -2,7 +2,7 @@
 
 #use Test::More qw/no_plan/;
 use Test::More tests => 24;
-use File::pushd;
+use File::pushd 1;
 
 #--------------------------------------------------------------------------#
 # Mask any user defaults for the duration of the program

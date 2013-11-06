@@ -2,7 +2,7 @@ use strict;
 use warnings;
 
 #use Test::More 'no_plan'; 
-use Test::More tests => 32; 
+use Test::More tests => 27; 
 use t::CLI;
 use File::Copy;
 use File::pushd;
@@ -23,7 +23,7 @@ $|++;
 my $null_default = dir('t/config/empty_default')->absolute;
 my $sample_config = dir('t/config/sample')->absolute;
 
-my $cli = t::CLI->new('scripts/makeperlmod');
+my $cli = t::CLI->new('bin/makeperlmod');
 
 #--------------------------------------------------------------------------#
 # Mask any user defaults for the duration of the program
@@ -31,7 +31,8 @@ my $cli = t::CLI->new('scripts/makeperlmod');
 
 # these add 8 tests
 my $pretest_status = _save_pretesting_status();
-END { _restore_pretesting_status( $pretest_status ) }
+# XXX This caused crazy deletion attempts all over my FS so disabling it
+##END { _restore_pretesting_status( $pretest_status ) }
 
 #--------------------------------------------------------------------------#
 # error if config file doesn't exist

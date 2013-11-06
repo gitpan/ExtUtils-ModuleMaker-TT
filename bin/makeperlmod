@@ -1,14 +1,16 @@
-#!/usr/bin/perl -w
-
-$VERSION = "0.93";
-
+#!/usr/bin/perl
 use strict;
-use Config::Find;
-use Config::General;
+use warnings;
+# PODNAME: makeperlmod
+# ABSTRACT: Perl program for creating new modules with ExtUtils::ModuleMaker::TT
+our $VERSION = '0.94'; # VERSION
+
+use Config::Find 0.22;
+use Config::General 2.29;
 use Data::Dumper;
-use ExtUtils::ModuleMaker;
+use ExtUtils::ModuleMaker 0.46;
 use Getopt::Long;
-use Path::Class;
+use Path::Class 0.15;
 
 #--------------------------------------------------------------------------#
 # usage
@@ -213,14 +215,21 @@ SWITCH: for(1) {
 exit;
 
 __END__
-# Docs for POD and pod2usage go here.  Put usage/options in SYNOPSIS
+
+=pod
+
+=encoding UTF-8
 
 =head1 NAME
 
 makeperlmod - Perl program for creating new modules with ExtUtils::ModuleMaker::TT
 
+=head1 VERSION
+
+version 0.94
+
 =head1 SYNOPSIS
-  
+
  makeperlmod [ -c config_file ] mode_option [argument] [-e extra_info ]
 
 =head1 DESCRIPTION
@@ -260,7 +269,7 @@ printing a skeleton method to STDOUT
 One of the following mode options is required and only one may be used.
 
 =over
-    
+
 =item -d [CONFIG] or --defaults [CONFIG]
 
 Writes out default options from ExtUtils::ModuleMaker to the given file in
@@ -383,7 +392,7 @@ CONFIG option is interpreted by makeperlmod.  For example, on Linux:
 
  $ makeperlmod -l /etc/makeperlmod/corp/std.conf
  /etc/makeperlmod/corp/std.conf
- 
+
 =head1 EXAMPLES
 
 Create a custom configuration file
@@ -393,7 +402,7 @@ Create a custom configuration file
 Create a custom template directory
 
     makeperlmod -t ~/.makeperlmod.templates
- 
+
 Edit the custom configuration file.  Set AUTHOR and other defaults as desired.
 Set TEMPLATE_DIR to the templates directory (e.g. ~/.makeperlmod.templates ) to
 use your own custom templates in place of the defaults.
@@ -410,7 +419,7 @@ From within the new distribution, add another .pm
 
     cd Sample-Module-Foo/lib/Sample/Module
     makeperlmod -m Sample::Module::Baz
- 
+
 From within an editor, insert a new subroutine skeleton.  E.g. from within
 vi,
 
@@ -419,35 +428,20 @@ vi,
 Or insert several subroutines
 
     :r! makeperlmod -s sample_method -e method2 -e method3
- 
+
 =head1 SEE ALSO
 
 See L<ExtUtils::ModuleMaker> and L<ExtUtils::ModuleMaker::TT> for more details.
 
-=head1 BUGS
-
-Please report bugs using the CPAN Request Tracker at 
-L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=ExtUtils-ModuleMaker-TT>
-
-When submitting a bug or request, please include a test-file or a patch to an
-existing test-file that illustrates the bug or desired feature.
-
 =head1 AUTHOR
 
-David A Golden (DAGOLDEN)
+David Golden <dagolden@cpan.org>
 
-dagolden@cpan.org
+=head1 COPYRIGHT AND LICENSE
 
-L<http://dagolden.com/>
+This software is copyright (c) 2013 by David Golden.
 
-=head1 COPYRIGHT
-
-Copyright (c) 2004-2005 by David A Golden
-
-This program is free software; you can redistribute
-it and/or modify it under the same terms as Perl itself.
-
-The full text of the license can be found in the
-LICENSE file included with this module.
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
 
 =cut

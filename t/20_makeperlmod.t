@@ -1,10 +1,10 @@
 use strict;
 use warnings;
 
-use Test::More tests => 56;
+use Test::More tests => 51;
 use t::CLI;
-use File::pushd;
-use Path::Class;
+use File::pushd 1;
+use Path::Class 0.15;
 
 BEGIN { 
     use_ok( "ExtUtils::ModuleMaker::Auxiliary",
@@ -17,7 +17,7 @@ BEGIN {
 #--------------------------------------------------------------------------#
 
 my $null_default = dir('t/config/empty_default')->absolute;
-my $cli = t::CLI->new('scripts/makeperlmod', "-c", $null_default);
+my $cli = t::CLI->new('bin/makeperlmod', "-c", $null_default);
 
 my @Foo_Bar_files = qw(
      Foo-Bar
@@ -41,7 +41,8 @@ my @Foo_Bar_files = qw(
 
 # these add 8 tests
 my $pretest_status = _save_pretesting_status();
-END { _restore_pretesting_status( $pretest_status ) }
+# XXX This caused crazy deletion attempts all over my FS so disabling it
+##END { _restore_pretesting_status( $pretest_status ) }
 
 #--------------------------------------------------------------------------#
 # With no arguments or in help mode, give a usage message

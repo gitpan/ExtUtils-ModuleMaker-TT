@@ -3,9 +3,9 @@ use strict;
 use warnings;
 
 use Test::Builder;
-use Probe::Perl;
-use IPC::Run3;
-use Path::Class;
+use Probe::Perl 0.01;
+use IPC::Run3 0.033;
+use Path::Class 0.15;
 #use POSIX qw( WEXITSTATUS );
 
 my $Test = Test::Builder->new;

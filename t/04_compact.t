@@ -3,7 +3,7 @@
 
 #use Test::More qw/no_plan/;
 use Test::More tests => 25;
-use File::pushd;
+use File::pushd 1;
 
 BEGIN { use_ok( 'ExtUtils::ModuleMaker' ); }
 
